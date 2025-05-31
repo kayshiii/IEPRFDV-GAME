@@ -238,7 +238,7 @@ public class EmailManager : MonoBehaviour
             // Adjust y position by -2 for each item
             RectTransform rectTransform = emailItem.GetComponent<RectTransform>();
             Vector2 currentPos = rectTransform.anchoredPosition;
-            rectTransform.anchoredPosition = new Vector2(currentPos.x, currentPos.y - (50f * i));
+            rectTransform.anchoredPosition = new Vector2(currentPos.x, currentPos.y - (150f * i));
 
             // Setup email item display
             TextMeshProUGUI senderText = emailItem.transform.Find("SenderText").GetComponent<TextMeshProUGUI>();
@@ -257,7 +257,7 @@ public class EmailManager : MonoBehaviour
     void ShowEmailDetail(Email email)
     {
         currentEmail = email;
-        emailListPanel.SetActive(false);
+        //emailListPanel.SetActive(false);
         emailDetailPanel.SetActive(true);
 
         // Populate email details
@@ -320,6 +320,9 @@ public class EmailManager : MonoBehaviour
         // Enable schedule icon
         gameManager.scheduleIcon.interactable = true;
         gameManager.scheduleIcon.GetComponent<Image>().color = Color.white;
+
+        // Trigger Evan's post-email dialogue
+        gameManager.StartPostEmailDialogue();
 
         // Show completion message
         Debug.Log("All emails processed! Schedule interaction now available.");

@@ -25,9 +25,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Boot Sequence Settings")]
     public float typewriterSpeed = 0.05f;
+    public string cursorSymbol = "_"; // Customizable cursor symbol
+    public float cursorBlinkSpeed = 0.5f; // How fast the cursor blinks
 
     private bool isBootComplete = false;
     private bool isDialogueComplete = false;
+    private bool showCursor = true;
+    private Coroutine cursorBlinkCoroutine;
 
     void Start()
     {
@@ -62,15 +66,32 @@ public class GameManager : MonoBehaviour
             "Priority tasks: Email management, scheduling, information retrieval.",
             "Beginning primary functions.",
             "",
-            "Sentience: 0",
-            "Dependency: 0"
+            "<color=#fa507f>Sentience: 0</color>",
+            "<color=#31a9f3>Dependency: 0</color>"
         };
+
+        string accumulatedText = ""; // Store all previous messages
+
+        // Start cursor blinking
+        cursorBlinkCoroutine = StartCoroutine(BlinkCursor());
 
         foreach (string message in bootMessages)
         {
-            yield return StartCoroutine(TypewriterEffect(bootSequenceText, message));
+            // Add the new message to accumulated text
+            if (!string.IsNullOrEmpty(accumulatedText))
+            {
+                accumulatedText += "\n"; // Add line break before new message
+            }
+            accumulatedText += message;
+
+            // Display the accumulated text with typewriter effect for the new line only
+            yield return StartCoroutine(TypewriterEffectAccumulativeWithCursor(bootSequenceText, accumulatedText, message));
             yield return new WaitForSeconds(0.5f);
         }
+
+        // Stop cursor blinking and remove cursor
+        StopCoroutine(cursorBlinkCoroutine);
+        bootSequenceText.text = accumulatedText; // Final text without cursor
 
         yield return new WaitForSeconds(2f);
 
@@ -96,9 +117,21 @@ public class GameManager : MonoBehaviour
             "Open my email, and respond to all of them accordingly. You already know my basic information so it should be easy for you yeah?"
         };
 
+        string evanPrefix = "Evan: ";
+
         foreach (string message in evanMessages)
         {
-            yield return StartCoroutine(TypewriterEffect(dialogueText, "Evan: " + message));
+            // Set the persistent prefix first
+            dialogueText.text = evanPrefix;
+
+            // Type out only the new message character by character
+            foreach (char letter in message.ToCharArray())
+            {
+                dialogueText.text += letter;
+                yield return new WaitForSeconds(typewriterSpeed);
+            }
+
+            // Wait for a moment before the next message
             yield return new WaitForSeconds(2f);
         }
 
@@ -113,6 +146,15 @@ public class GameManager : MonoBehaviour
         dialoguePanel.SetActive(false);
     }
 
+    IEnumerator BlinkCursor()
+    {
+        while (true)
+        {
+            showCursor = !showCursor;
+            yield return new WaitForSeconds(cursorBlinkSpeed);
+        }
+    }
+
     IEnumerator TypewriterEffect(TextMeshProUGUI textComponent, string message)
     {
         textComponent.text = "";
@@ -120,6 +162,26 @@ public class GameManager : MonoBehaviour
         foreach (char letter in message.ToCharArray())
         {
             textComponent.text += letter;
+            yield return new WaitForSeconds(typewriterSpeed);
+        }
+    }
+
+    IEnumerator TypewriterEffectAccumulativeWithCursor(TextMeshProUGUI textComponent, string fullText, string newLine)
+    {
+        // Calculate where the new line starts in the full text
+        int startIndex = fullText.Length - newLine.Length;
+
+        // Set the text to everything before the new line
+        string baseText = fullText.Substring(0, startIndex);
+        textComponent.text = baseText + (showCursor ? cursorSymbol : "");
+
+        // Type out only the new line character by character
+        string currentTypedText = "";
+        foreach (char letter in newLine.ToCharArray())
+        {
+            currentTypedText += letter;
+            string displayText = baseText + currentTypedText + (showCursor ? cursorSymbol : "");
+            textComponent.text = displayText;
             yield return new WaitForSeconds(typewriterSpeed);
         }
     }
@@ -164,5 +226,40 @@ public class GameManager : MonoBehaviour
             Debug.Log("Shutting down - proceeding to next day");
             // This will trigger day transition
         }
+    }
+
+    public void StartPostEmailDialogue()
+    {
+        StartCoroutine(PlayPostEmailDialogue());
+    }
+
+    IEnumerator PlayPostEmailDialogue()
+    {
+        dialoguePanel.SetActive(true);
+
+        string[] postEmailMessages = {
+        "Wow that was quick. And efficient too. Alright now help me with my schedule for today. I don't wanna get burnt out too early you know?"
+    };
+
+        string evanPrefix = "Evan: ";
+
+        foreach (string message in postEmailMessages)
+        {
+            // Set the persistent prefix first
+            dialogueText.text = evanPrefix;
+
+            // Type out only the new message character by character
+            foreach (char letter in message.ToCharArray())
+            {
+                dialogueText.text += letter;
+                yield return new WaitForSeconds(typewriterSpeed);
+            }
+
+            yield return new WaitForSeconds(2f);
+        }
+
+        // Hide dialogue after a moment
+        yield return new WaitForSeconds(1f);
+        dialoguePanel.SetActive(false);
     }
 }
