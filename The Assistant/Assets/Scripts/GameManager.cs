@@ -215,7 +215,11 @@ public class GameManager : MonoBehaviour
         if (scheduleIcon.interactable)
         {
             Debug.Log("Opening Schedule Interface");
-            // This will trigger the schedule management system
+            ScheduleManager scheduleManager = FindObjectOfType<ScheduleManager>();
+            if (scheduleManager != null)
+            {
+                scheduleManager.OpenScheduleInterface();
+            }
         }
     }
 
@@ -262,4 +266,28 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         dialoguePanel.SetActive(false);
     }
+
+    public void StartEndOfDayDialogue()
+    {
+        StartCoroutine(PlayEndOfDayDialogue());
+    }
+
+    IEnumerator PlayEndOfDayDialogue()
+    {
+        dialoguePanel.SetActive(true);
+
+        string endMessage = "Well, that wasn't terrible. At least I didn't miss my dentist appointment this time. Those reminder notifications actually helped. Let's try this again tomorrow, I guess.";
+
+        dialogueText.text = "Evan: ";
+
+        foreach (char letter in endMessage.ToCharArray())
+        {
+            dialogueText.text += letter;
+            yield return new WaitForSeconds(typewriterSpeed);
+        }
+
+        yield return new WaitForSeconds(3f);
+        dialoguePanel.SetActive(false);
+    }
+
 }
