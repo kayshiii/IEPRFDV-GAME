@@ -4911,7 +4911,7 @@ GameObject:
   - component: {fileID: 1374066912}
   - component: {fileID: 1374066911}
   m_Layer: 5
-  m_Name: UserfeedbackIcon
+  m_Name: UserFeedbackIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
