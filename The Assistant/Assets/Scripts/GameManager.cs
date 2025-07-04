@@ -27,8 +27,19 @@ public class GameManager : MonoBehaviour
     public Button feedbackIcon;
     public GameObject feedbackPanel;
     public TextMeshProUGUI feedbackDialogueText;
-    public TextMeshProUGUI feedbackStatsText;
     public Button closeFeedbackButton;
+
+    [Header("Stats UI")]
+    public TextMeshProUGUI sentienceText;
+    public TextMeshProUGUI dependencyText;
+    public RectTransform sentienceFillBar;
+    public RectTransform dependencyFillBar;
+
+    [Header("Stats Settings")]
+    public float maxSentienceWidth = 575f; // Maximum width of the sentience bar
+    public float maxDependencyWidth = 575f; // Maximum width of the dependency bar
+    public int maxSentienceValue = 100; // Maximum expected sentience value
+    public int maxDependencyValue = 100; // Maximum expected dependency value
 
     // --- Dialogue History ---
     private List<string> dialogueHistory = new List<string>();
@@ -164,7 +175,23 @@ public class GameManager : MonoBehaviour
     {
         sentience += sentienceChange;
         dependency += dependencyChange;
+
+        // Ensure stats don't go below 0
+        sentience = Mathf.Max(0, sentience);
+        dependency = Mathf.Max(0, dependency);
+
+        // Update fill bars if feedback panel is currently open
+        if (feedbackPanel.activeInHierarchy)
+        {
+            UpdateSentienceFillBar();
+            UpdateDependencyFillBar();
+
+            // Also update the text displays
+            sentienceText.text = $"Sentience: {sentience}";
+            dependencyText.text = $"Dependency: {dependency}";
+        }
     }
+
 
     // --- Dialogue History Tracking ---
     public void AddToDialogueHistory(string dialogueLine)
@@ -224,14 +251,52 @@ public class GameManager : MonoBehaviour
         }
         feedbackDialogueText.text = sb.ToString();
 
-        // Show current stats
-        feedbackStatsText.text = $"Sentience: {sentience}\nDependency: {dependency}";
+        // Update individual stat texts
+        sentienceText.text = $"Sentience: {sentience}";
+        dependencyText.text = $"Dependency: {dependency}";
+
+        // Update fill bars
+        UpdateSentienceFillBar();
+        UpdateDependencyFillBar();
 
         feedbackPanel.SetActive(true);
 
         closeFeedbackButton.onClick.RemoveAllListeners();
         closeFeedbackButton.onClick.AddListener(() => feedbackPanel.SetActive(false));
     }
+
+    void UpdateSentienceFillBar()
+    {
+        if (sentienceFillBar != null)
+        {
+            // Calculate fill percentage (0 to 1)
+            float fillPercentage = Mathf.Clamp01((float)sentience / maxSentienceValue);
+
+            // Calculate new width
+            float newWidth = maxSentienceWidth * fillPercentage;
+
+            // Update the width while keeping the height the same
+            Vector2 currentSize = sentienceFillBar.sizeDelta;
+            sentienceFillBar.sizeDelta = new Vector2(newWidth, currentSize.y);
+        }
+    }
+
+    void UpdateDependencyFillBar()
+    {
+        if (dependencyFillBar != null)
+        {
+            // Calculate fill percentage (0 to 1)
+            float fillPercentage = Mathf.Clamp01((float)dependency / maxDependencyValue);
+
+            // Calculate new width
+            float newWidth = maxDependencyWidth * fillPercentage;
+
+            // Update the width while keeping the height the same
+            Vector2 currentSize = dependencyFillBar.sizeDelta;
+            dependencyFillBar.sizeDelta = new Vector2(newWidth, currentSize.y);
+        }
+    }
+
 
     // --- Dialogue Triggers ---
     public void StartPostEmailDialogue()
