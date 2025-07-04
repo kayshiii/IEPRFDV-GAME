@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day1
+  m_EditorClassIdentifier: 
+  dayNumber: 1
+  emails:
+  - sender: Boss
+    subject: Project Phoenix Deadline
+    content: Evan, need the character design concepts for Project Phoenix by EOD
+      tomorrow. The art team is waiting. No excuses this time.
+    basicResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    enhancedResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    autonomousDecision:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+  - sender: 
+    subject: 
+    content: 
+    basicResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    enhancedResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    autonomousDecision:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+  - sender: 
+    subject: 
+    content: 
+    basicResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    enhancedResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    autonomousDecision:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+  - sender: 
+    subject: 
+    content: 
+    basicResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    enhancedResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    autonomousDecision:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+  - sender: 
+    subject: 
+    content: 
+    basicResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    enhancedResponse:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+    autonomousDecision:
+      choiceText: 
+      sentenceModifier: 0
+      dependencyModifier: 0
+      resultDescription: 
+  scheduleItems: []
+  bootDialogue: []
+  postEmailDialogue: []
+  endOfDayDialogue: []
