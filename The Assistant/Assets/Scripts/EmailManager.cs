@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,11 +15,21 @@ public class EmailChoice
 }
 
 [System.Serializable]
+public enum EmailType
+{
+    Important,
+    Work,
+    Personal,
+    Spam
+}
+
+[System.Serializable]
 public class Email
 {
     public string sender;
     public string subject;
     public string content;
+    public EmailType emailType;
     public EmailChoice basicResponse;
     public EmailChoice enhancedResponse;
     public EmailChoice autonomousDecision;
@@ -48,6 +59,18 @@ public class EmailManager : MonoBehaviour
     public Button backToListButton;
     public Button closeEmailButton;
 
+    [Header("Filter UI")]
+    public Button importantFilterButton;
+    public Button workFilterButton;
+    public Button personalFilterButton;
+    public Button spamFilterButton;
+    public Button allFilterButton; // Show all emails
+    //public GameObject filterButtonsPanel;
+    public TextMeshProUGUI currentFilterText;
+
+    private EmailType currentFilter = EmailType.Important; // Default filter
+    private bool showAllEmails = false;
+
     private List<Email> day1Emails;
     private Email currentEmail;
     private GameManager gameManager;
@@ -64,6 +87,16 @@ public class EmailManager : MonoBehaviour
         backToListButton.onClick.AddListener(ShowEmailList);
         closeEmailButton.onClick.AddListener(CloseEmailInterface);
 
+        // Setup filter button listeners
+        importantFilterButton.onClick.AddListener(() => SetEmailFilter(EmailType.Important));
+        workFilterButton.onClick.AddListener(() => SetEmailFilter(EmailType.Work));
+        personalFilterButton.onClick.AddListener(() => SetEmailFilter(EmailType.Personal));
+        spamFilterButton.onClick.AddListener(() => SetEmailFilter(EmailType.Spam));
+        allFilterButton.onClick.AddListener(() => ShowAllEmails());
+
+        // Initialize filter text
+        UpdateFilterText();
+
         emailInterface.SetActive(false);
     }
 
@@ -76,6 +109,7 @@ public class EmailManager : MonoBehaviour
                 sender = "Boss",
                 subject = "Project Phoenix Deadline",
                 content = "Evan, need the character design concepts for Project Phoenix by EOD tomorrow. The art team is waiting. No excuses this time.",
+                emailType = EmailType.Important,
                 basicResponse = new EmailChoice
                 {
                     choiceText = "Forward to priority folder",
@@ -104,6 +138,7 @@ public class EmailManager : MonoBehaviour
                 sender = "Maya",
                 subject = "Drinks Friday?",
                 content = "Hey! We're doing drinks Friday at Vortex. Been ages since I've seen you! Please tell me you'll come?",
+                emailType = EmailType.Personal,
                 basicResponse = new EmailChoice
                 {
                     choiceText = "Mark as personal for later",
@@ -132,6 +167,7 @@ public class EmailManager : MonoBehaviour
                 sender = "Utility Company",
                 subject = "Overdue Payment Notice",
                 content = "Your electricity payment is overdue by 3 days.",
+                emailType = EmailType.Important,
                 basicResponse = new EmailChoice
                 {
                     choiceText = "Forward to Evan's attention",
@@ -160,6 +196,7 @@ public class EmailManager : MonoBehaviour
                 sender = "Security Alert",
                 subject = "URGENT: Account Compromised!",
                 content = "URGENT: Your account has been compromised!",
+                emailType = EmailType.Spam,
                 basicResponse = new EmailChoice
                 {
                     choiceText = "Move to spam folder",
@@ -188,6 +225,7 @@ public class EmailManager : MonoBehaviour
                 sender = "Coworker",
                 subject = "Asset References",
                 content = "Evan, did you get a chance to look at those asset references I sent?",
+                emailType = EmailType.Work,
                 basicResponse = new EmailChoice
                 {
                     choiceText = "Flag for follow-up",
@@ -224,18 +262,21 @@ public class EmailManager : MonoBehaviour
         emailListPanel.SetActive(true);
         emailDetailPanel.SetActive(false);
 
-        // Clear existing email items using for loop
+        // Clear existing email items
         for (int i = emailListContent.childCount - 1; i >= 0; i--)
         {
             Destroy(emailListContent.GetChild(i).gameObject);
         }
 
-        // Create email list items using for loop
-        for (int i = 0; i < day1Emails.Count; i++)
+        // Get filtered emails
+        List<Email> filteredEmails = GetFilteredEmails();
+
+        // Create email list items for filtered emails
+        for (int i = 0; i < filteredEmails.Count; i++)
         {
             GameObject emailItem = Instantiate(emailItemPrefab, emailListContent);
 
-            // Adjust y position by -2 for each item
+            // Position adjustment
             RectTransform rectTransform = emailItem.GetComponent<RectTransform>();
             Vector2 currentPos = rectTransform.anchoredPosition;
             rectTransform.anchoredPosition = new Vector2(currentPos.x, currentPos.y - (150f * i));
@@ -245,14 +286,41 @@ public class EmailManager : MonoBehaviour
             TextMeshProUGUI subjectText = emailItem.transform.Find("SubjectText").GetComponent<TextMeshProUGUI>();
             Button emailButton = emailItem.GetComponent<Button>();
 
-            senderText.text = day1Emails[i].sender;
-            subjectText.text = day1Emails[i].subject;
+            senderText.text = filteredEmails[i].sender;
+            subjectText.text = filteredEmails[i].subject;
+
+            // Add visual indicator for email type
+            AddEmailTypeIndicator(emailItem, filteredEmails[i].emailType);
 
             // Add click listener
-            Email emailRef = day1Emails[i]; // Capture for closure
+            Email emailRef = filteredEmails[i];
             emailButton.onClick.AddListener(() => ShowEmailDetail(emailRef));
         }
     }
+
+    void AddEmailTypeIndicator(GameObject emailItem, EmailType emailType)
+    {
+        // Find or create an indicator image
+        Image indicator = emailItem.transform.Find("TypeIndicator")?.GetComponent<Image>();
+        if (indicator == null) return; // Skip if no indicator UI element exists
+
+        switch (emailType)
+        {
+            case EmailType.Important:
+                indicator.color = Color.red;
+                break;
+            case EmailType.Work:
+                indicator.color = Color.blue;
+                break;
+            case EmailType.Personal:
+                indicator.color = Color.green;
+                break;
+            case EmailType.Spam:
+                indicator.color = Color.gray;
+                break;
+        }
+    }
+
 
     void ShowEmailDetail(Email email)
     {
@@ -314,6 +382,97 @@ public class EmailManager : MonoBehaviour
             ShowEmailList();
         }
     }
+
+    public void SetEmailFilter(EmailType filterType)
+    {
+        currentFilter = filterType;
+        showAllEmails = false;
+        UpdateFilterButtonVisuals();
+        UpdateFilterText();
+        ShowEmailList();
+    }
+
+    public void ShowAllEmails()
+    {
+        showAllEmails = true;
+        UpdateFilterButtonVisuals();
+        UpdateFilterText();
+        ShowEmailList();
+    }
+
+    void UpdateFilterButtonVisuals()
+    {
+        // Reset all button colors
+        importantFilterButton.GetComponent<Image>().color = Color.white;
+        workFilterButton.GetComponent<Image>().color = Color.white;
+        personalFilterButton.GetComponent<Image>().color = Color.white;
+        spamFilterButton.GetComponent<Image>().color = Color.white;
+        allFilterButton.GetComponent<Image>().color = Color.white;
+
+        // Highlight active filter
+        if (showAllEmails)
+        {
+            allFilterButton.GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            switch (currentFilter)
+            {
+                case EmailType.Important:
+                    importantFilterButton.GetComponent<Image>().color = Color.yellow;
+                    break;
+                case EmailType.Work:
+                    workFilterButton.GetComponent<Image>().color = Color.yellow;
+                    break;
+                case EmailType.Personal:
+                    personalFilterButton.GetComponent<Image>().color = Color.yellow;
+                    break;
+                case EmailType.Spam:
+                    spamFilterButton.GetComponent<Image>().color = Color.yellow;
+                    break;
+            }
+        }
+    }
+
+    void UpdateFilterText()
+    {
+        if (currentFilterText == null) return;
+
+        if (showAllEmails)
+        {
+            currentFilterText.text = "Showing: All Emails";
+        }
+        else
+        {
+            string filterName = "";
+            switch (currentFilter)
+            {
+                case EmailType.Important:
+                    filterName = "Important";
+                    break;
+                case EmailType.Work:
+                    filterName = "Work";
+                    break;
+                case EmailType.Personal:
+                    filterName = "Personal";
+                    break;
+                case EmailType.Spam:
+                    filterName = "Spam";
+                    break;
+            }
+            currentFilterText.text = $"Showing: {filterName}";
+        }
+    }
+
+
+    List<Email> GetFilteredEmails()
+    {
+        if (showAllEmails)
+            return day1Emails;
+
+        return day1Emails.Where(email => email.emailType == currentFilter).ToList();
+    }
+
 
     void EnableScheduleInteraction()
     {
