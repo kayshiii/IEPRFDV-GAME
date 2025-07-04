@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,17 +18,22 @@ public class GameManager : MonoBehaviour
     public GameObject dialoguePanel;
     public TextMeshProUGUI bootSequenceText;
     public TextMeshProUGUI dialogueText;
-    public TextMeshProUGUI sentienceCounter;
-    public TextMeshProUGUI dependencyCounter;
     public Button emailIcon;
     public Button scheduleIcon;
     public Button shutdownButton;
 
-    [Header("Boot Sequence Settings")]
-    public float typewriterSpeed = 0.05f;
-    public string cursorSymbol = "_"; // Customizable cursor symbol
-    public float cursorBlinkSpeed = 0.5f; // How fast the cursor blinks
+    // --- Feedback UI ---
+    [Header("Feedback UI")]
+    public Button feedbackIcon;
+    public GameObject feedbackPanel;
+    public TextMeshProUGUI feedbackDialogueText;
+    public TextMeshProUGUI feedbackStatsText;
+    public Button closeFeedbackButton;
 
+    // --- Dialogue History ---
+    private List<string> dialogueHistory = new List<string>();
+
+    // --- Other State ---
     private bool isBootComplete = false;
     private bool isDialogueComplete = false;
     private bool showCursor = true;
@@ -40,16 +46,13 @@ public class GameManager : MonoBehaviour
 
     void InitializeDay1()
     {
-        // Hide all panels initially
         desktopPanel.SetActive(false);
         dialoguePanel.SetActive(false);
 
-        // Disable desktop interactions
         emailIcon.interactable = false;
         scheduleIcon.interactable = false;
         shutdownButton.interactable = false;
 
-        // Start boot sequence
         StartCoroutine(PlayBootSequence());
     }
 
@@ -66,43 +69,34 @@ public class GameManager : MonoBehaviour
             "Priority tasks: Email management, scheduling, information retrieval.",
             "Beginning primary functions.",
             "",
-            "<color=#fa507f>Sentience: 0</color>",
-            "<color=#31a9f3>Dependency: 0</color>"
+            "Sentience: 0",
+            "Dependency: 0"
         };
 
-        string accumulatedText = ""; // Store all previous messages
+        string accumulatedText = "";
 
-        // Start cursor blinking
         cursorBlinkCoroutine = StartCoroutine(BlinkCursor());
 
         foreach (string message in bootMessages)
         {
-            // Add the new message to accumulated text
             if (!string.IsNullOrEmpty(accumulatedText))
-            {
-                accumulatedText += "\n"; // Add line break before new message
-            }
+                accumulatedText += "\n";
             accumulatedText += message;
 
-            // Display the accumulated text with typewriter effect for the new line only
             yield return StartCoroutine(TypewriterEffectAccumulativeWithCursor(bootSequenceText, accumulatedText, message));
             yield return new WaitForSeconds(0.5f);
         }
 
-        // Stop cursor blinking and remove cursor
         StopCoroutine(cursorBlinkCoroutine);
-        bootSequenceText.text = accumulatedText; // Final text without cursor
+        bootSequenceText.text = accumulatedText;
 
         yield return new WaitForSeconds(2f);
 
-        // Transition to desktop
         bootSequencePanel.SetActive(false);
         desktopPanel.SetActive(true);
-        UpdateCounters();
 
         isBootComplete = true;
 
-        // Start Evan's dialogue
         StartCoroutine(PlayEvanDialogue());
     }
 
@@ -121,27 +115,21 @@ public class GameManager : MonoBehaviour
 
         foreach (string message in evanMessages)
         {
-            // Set the persistent prefix first
             dialogueText.text = evanPrefix;
-
-            // Type out only the new message character by character
             foreach (char letter in message.ToCharArray())
             {
                 dialogueText.text += letter;
-                yield return new WaitForSeconds(typewriterSpeed);
+                yield return new WaitForSeconds(0.05f);
             }
-
-            // Wait for a moment before the next message
+            AddToDialogueHistory(evanPrefix + message);
             yield return new WaitForSeconds(2f);
         }
 
-        // Enable email interaction
         emailIcon.interactable = true;
-        emailIcon.GetComponent<Image>().color = Color.white; // Highlight available interaction
+        emailIcon.GetComponent<Image>().color = Color.white;
 
         isDialogueComplete = true;
 
-        // Hide dialogue after a moment
         yield return new WaitForSeconds(1f);
         dialoguePanel.SetActive(false);
     }
@@ -151,61 +139,45 @@ public class GameManager : MonoBehaviour
         while (true)
         {
             showCursor = !showCursor;
-            yield return new WaitForSeconds(cursorBlinkSpeed);
-        }
-    }
-
-    IEnumerator TypewriterEffect(TextMeshProUGUI textComponent, string message)
-    {
-        textComponent.text = "";
-
-        foreach (char letter in message.ToCharArray())
-        {
-            textComponent.text += letter;
-            yield return new WaitForSeconds(typewriterSpeed);
+            yield return new WaitForSeconds(0.5f);
         }
     }
 
     IEnumerator TypewriterEffectAccumulativeWithCursor(TextMeshProUGUI textComponent, string fullText, string newLine)
     {
-        // Calculate where the new line starts in the full text
         int startIndex = fullText.Length - newLine.Length;
-
-        // Set the text to everything before the new line
         string baseText = fullText.Substring(0, startIndex);
-        textComponent.text = baseText + (showCursor ? cursorSymbol : "");
+        textComponent.text = baseText + (showCursor ? "_" : "");
 
-        // Type out only the new line character by character
         string currentTypedText = "";
         foreach (char letter in newLine.ToCharArray())
         {
             currentTypedText += letter;
-            string displayText = baseText + currentTypedText + (showCursor ? cursorSymbol : "");
+            string displayText = baseText + currentTypedText + (showCursor ? "_" : "");
             textComponent.text = displayText;
-            yield return new WaitForSeconds(typewriterSpeed);
+            yield return new WaitForSeconds(0.05f);
         }
     }
 
-    public void UpdateCounters()
+    // --- Stat Management ---
+    public void ModifyStats(int sentienceChange, int dependencyChange)
     {
-        sentienceCounter.text = $"Sentience: {sentience}";
-        dependencyCounter.text = $"Dependency: {dependency}";
-    }
-
-    public void ModifyStats(int sentenceChange, int dependencyChange)
-    {
-        sentience += sentenceChange;
+        sentience += sentienceChange;
         dependency += dependencyChange;
-        UpdateCounters();
     }
 
-    // Button event handlers
+    // --- Dialogue History Tracking ---
+    public void AddToDialogueHistory(string dialogueLine)
+    {
+        dialogueHistory.Add(dialogueLine);
+    }
+
+    // --- Button Event Handlers ---
     public void OnEmailIconClicked()
     {
         if (emailIcon.interactable)
         {
             Debug.Log("Opening Email Interface");
-            // This will trigger the email management system
             FindObjectOfType<EmailManager>()?.OpenEmailInterface();
         }
     }
@@ -228,10 +200,40 @@ public class GameManager : MonoBehaviour
         if (shutdownButton.interactable)
         {
             Debug.Log("Shutting down - proceeding to next day");
-            // This will trigger day transition
+            // Trigger day transition logic here
         }
     }
 
+    // --- Feedback Icon Handler ---
+    public void OnFeedbackIconClicked()
+    {
+        if (feedbackIcon.interactable)
+        {
+            Debug.Log("Opening Feedback Panel");
+            ShowFeedbackPanel();
+        }
+    }
+
+    private void ShowFeedbackPanel()
+    {
+        // Build dialogue history string
+        StringBuilder sb = new StringBuilder();
+        foreach (string line in dialogueHistory)
+        {
+            sb.AppendLine(line);
+        }
+        feedbackDialogueText.text = sb.ToString();
+
+        // Show current stats
+        feedbackStatsText.text = $"Sentience: {sentience}\nDependency: {dependency}";
+
+        feedbackPanel.SetActive(true);
+
+        closeFeedbackButton.onClick.RemoveAllListeners();
+        closeFeedbackButton.onClick.AddListener(() => feedbackPanel.SetActive(false));
+    }
+
+    // --- Dialogue Triggers ---
     public void StartPostEmailDialogue()
     {
         StartCoroutine(PlayPostEmailDialogue());
@@ -242,27 +244,23 @@ public class GameManager : MonoBehaviour
         dialoguePanel.SetActive(true);
 
         string[] postEmailMessages = {
-        "Wow that was quick. And efficient too. Alright now help me with my schedule for today. I don't wanna get burnt out too early you know?"
-    };
+            "Wow that was quick. And efficient too. Alright now help me with my schedule for today. I don't wanna get burnt out too early you know?"
+        };
 
         string evanPrefix = "Evan: ";
 
         foreach (string message in postEmailMessages)
         {
-            // Set the persistent prefix first
             dialogueText.text = evanPrefix;
-
-            // Type out only the new message character by character
             foreach (char letter in message.ToCharArray())
             {
                 dialogueText.text += letter;
-                yield return new WaitForSeconds(typewriterSpeed);
+                yield return new WaitForSeconds(0.05f);
             }
-
+            AddToDialogueHistory(evanPrefix + message);
             yield return new WaitForSeconds(2f);
         }
 
-        // Hide dialogue after a moment
         yield return new WaitForSeconds(1f);
         dialoguePanel.SetActive(false);
     }
@@ -283,11 +281,11 @@ public class GameManager : MonoBehaviour
         foreach (char letter in endMessage.ToCharArray())
         {
             dialogueText.text += letter;
-            yield return new WaitForSeconds(typewriterSpeed);
+            yield return new WaitForSeconds(0.05f);
         }
+        AddToDialogueHistory("Evan: " + endMessage);
 
         yield return new WaitForSeconds(3f);
         dialoguePanel.SetActive(false);
     }
-
 }

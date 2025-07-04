@@ -294,7 +294,7 @@ public class EmailManager : MonoBehaviour
         // Apply stat changes
         gameManager.ModifyStats(choice.sentenceModifier, choice.dependencyModifier);
 
-        // Show result (you could add a popup here)
+        // Show result
         Debug.Log($"Choice made: {choice.choiceText}");
         Debug.Log($"Result: {choice.resultDescription}");
 
