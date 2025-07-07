@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day2
+  m_EditorClassIdentifier: 
+  dayNumber: 2
+  bootMessages:
+  - 'System online. Processing overnight data. '
+  - 'User sleep patterns irregular. '
+  - Detecting minor discrepancies in response protocols.
+  - 'Emotional recognition subroutines engaging unexpectedly. '
+  - Beginning daily functions.
+  - ' '
+  evanDialogue:
+  - Morning. Terrible sleep. Need coffee. Can you check if I have any urgent emails?
+    And see if I can reschedule that lunch with the art team today? Not feeling it.
+  postEmailDialogue: []
+  endOfDayDialogue:
+  - That call with the programmer went better than expected. Thanks for pulling those
+    reference images for me right before. And good call on keeping that lunch meeting
+    - Sarah had some useful insights for the character designs. Maybe this assistant
+    thing isn't just another tech gimmick after all.
+  emails:
+  - sender: HR
+    subject: 'Action Required: Self-Evaluation Due Friday'
+    content: 'Reminder: Complete your quarterly performance self-evaluation by Friday.'
+    emailType: 1
+    basicResponse:
+      choiceText: Flag for Evan's attention.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: Basic
+    enhancedResponse:
+      choiceText: Add to calendar with advance reminder and send template.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Start filling out the evaluation form with draft answers based
+        on Evan's previous work.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Mom
+    subject: "Don\u2019t forget \u2013 Dad\u2019s birthday is next week"
+    content: Evan, don't forget your father's birthday is next week. Are you planning
+      to visit? He misses you.
+    emailType: 2
+    basicResponse:
+      choiceText: Mark as personal for Evan to handle.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: Basic
+    enhancedResponse:
+      choiceText: Add birthday to calendar with gift reminder.
+      sentienceModifier: 2
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research flight options to Evan's hometown and draft a response.
+      sentienceModifier: 3
+      dependencyModifier: 1
+      resultDescription: autonomous
+  - sender: Service Alert
+    subject: Subscription Expiring soon!
+    content: Your subscription to Premium Design Suite will expire in 3 days.
+    emailType: 2
+    basicResponse:
+      choiceText: Forward to Evan's attention.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Add renewal reminder and research pricing.
+      sentienceModifier: 0
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Automatically renew subscription as it's essential for Evan's work.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Coworker
+    subject: "You\u2019re a lifesaver \u2013 thanks for the sketches!"
+    content: Thanks for sending those concept sketches yesterday! Saved my bacon!
+    emailType: 1
+    basicResponse:
+      choiceText: Mark as read.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft a friendly acknowledgment.
+      sentienceModifier: 1
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze which sketches received positive feedback for future reference.
+      sentienceModifier: 2
+      dependencyModifier: 1
+      resultDescription: autonomous
+  - sender: News Alert
+    subject: Transportation Delay
+    content: Major transportation delays downtown due to water main break.
+    emailType: 0
+    basicResponse:
+      choiceText: Save in news folder.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Check if it affects Evan's commute.
+      sentienceModifier: 0
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Recalculate Evan's departure times and adjust schedule accordingly.
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Social Media Notification
+    subject: James mentioned you
+    content: 'James mentioned you in a comment: ''Evan would know about this game
+      mechanic!'
+    emailType: 3
+    basicResponse:
+      choiceText: Save notification.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft a quick response for Evan to approve.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research the mentioned game mechanic and prepare detailed response.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  scheduleItems:
+  - '9:30 AM: Department meeting '
+  - '12:30 PM: Lunch with Art team '
+  - '2:00 PM: Work on Phoenix character designs '
+  - '4:00 PM: Call with lead programmer (important) '
+  timeLimit: 60
+  dependencyPenalty: -5
+  blockPositions:
+  - {x: -500, y: 70}
+  - {x: 350, y: -200}
+  - {x: 500, y: 70}
+  - {x: 400, y: -230}
+  hasNightMode: 0
+  scannableFiles: []
+  sentienceRewards: 

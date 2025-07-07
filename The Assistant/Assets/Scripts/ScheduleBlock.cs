@@ -72,19 +72,19 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     void SetupBlockShape()
     {
         // Define different shapes for different schedule blocks
-        if (scheduleText.Contains("Team meeting"))
+        if (scheduleText.Contains("Team meeting") || scheduleText.Contains("Department meeting"))
         {
             blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false } }; // inverted L (2x4) -- good
         }
-        else if (scheduleText.Contains("Lunch"))
+        else if (scheduleText.Contains("Lunch") || scheduleText.Contains("Lunch with Art team"))
         {
             blockShape = new bool[,] { { true, true }, { true, true } }; // Square (2x2) -- correct
         }
-        else if (scheduleText.Contains("Dentist"))
+        else if (scheduleText.Contains("Dentist") || scheduleText.Contains("Work on Phoenix character designs"))
         {
             blockShape = new bool[,] { { true, false, false, false }, { true, true, true, true } }; // inverted L (4x2) -- good
         }
-        else if (scheduleText.Contains("Phoenix"))
+        else if (scheduleText.Contains("Phoenix") || scheduleText.Contains("Call with lead programmer (important)"))
         {
             blockShape = new bool[,] { { false, true }, { true, true }, { true, true }, { false, true } }; // (2x4) -- good
         }

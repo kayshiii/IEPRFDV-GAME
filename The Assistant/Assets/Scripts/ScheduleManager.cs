@@ -10,7 +10,7 @@ public class ScheduleManager : MonoBehaviour
     public GameObject schedulePanel;
     public GameObject schedulePanelProper;
     public Transform gridContainer;
-    public RectTransform gridVisualAsset; // Your Group 6 grid asset
+    public RectTransform gridVisualAsset;
     public GameObject interactiveCellPrefab;
     public Transform blockContainer;
     public Button completeScheduleButton;
@@ -22,45 +22,41 @@ public class ScheduleManager : MonoBehaviour
     public int gridHeight = 5;
 
     [Header("Block Prefabs")]
-    public GameObject[] blockPrefabs; // 4 different shaped blocks
-
-    [Header("Manual Block Positions")]
-    public Vector2[] blockPositions = new Vector2[4];
-
-    [Header("Day 1 Settings")]
-    public float timeLimit = 60f; // 1 minute
-    public int dependencyPenalty = -3;
+    public GameObject[] blockPrefabs;
 
     [Header("Completion State")]
     private bool hasCompletedSchedule = false;
-    public GameObject completionMessagePanel; // UI panel to show completion message
-    public TextMeshProUGUI completionMessageText; // Text component for the message
+    public GameObject completionMessagePanel;
+    public TextMeshProUGUI completionMessageText;
 
     private GridCell[,] grid;
     private List<ScheduleBlock> scheduleBlocks = new List<ScheduleBlock>();
     private float currentTime;
     private bool isGameActive = false;
     private bool isCompleted = false;
-
     private bool scheduleAttempted = false;
-
-    // Day 1 schedule items
-    private string[] day1ScheduleItems = {
-        "9:00 AM: Team meeting",
-        "12:00 PM: Lunch",
-        "2:00 PM: Dentist appointment",
-        "3:30 PM: Work on Phoenix character designs"
-    };
+    private GameManager gameManager;
+    private DayData currentDayData;
 
     void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
         schedulePanel.SetActive(false);
         completeScheduleButton.onClick.AddListener(CompleteSchedule);
     }
 
+    public void ResetForNewDay()
+    {
+        hasCompletedSchedule = false;
+        scheduleAttempted = false;
+        isGameActive = false;
+        isCompleted = false;
+    }
+
     public void OpenScheduleInterface()
     {
-        // Check if schedule has already been completed/attempted
+        currentDayData = gameManager.CurrentDayData;
+
         if (hasCompletedSchedule || scheduleAttempted)
         {
             schedulePanel.SetActive(true);
@@ -90,7 +86,6 @@ public class ScheduleManager : MonoBehaviour
             completionMessageText.text = "Schedule attempt completed. Check back tomorrow!";
         }
 
-        // Auto-hide after 3 seconds
         StartCoroutine(HideCompletionMessage());
     }
 
@@ -112,31 +107,22 @@ public class ScheduleManager : MonoBehaviour
 
         grid = new GridCell[gridWidth, gridHeight];
 
-        // Get dimensions from your grid asset
         float gridWidth_pixels = gridVisualAsset.rect.width;
         float gridHeight_pixels = gridVisualAsset.rect.height;
+        float cellWidth = gridWidth_pixels / gridWidth;
+        float cellHeight = gridHeight_pixels / gridHeight;
 
-        // Calculate individual cell dimensions
-        float cellWidth = gridWidth_pixels / gridWidth; // ÷ 4
-        float cellHeight = gridHeight_pixels / gridHeight; // ÷ 5
-
-        // Get the grid asset's position as reference point
         Vector2 gridPosition = gridVisualAsset.anchoredPosition;
-
-        // Calculate starting position (top-left corner of first cell)
         float startX = gridPosition.x - (gridWidth_pixels / 2f) + (cellWidth / 2f);
         float startY = gridPosition.y + (gridHeight_pixels / 2f) - (cellHeight / 2f);
 
-        // Create interactive cells for each grid position
         for (int row = 0; row < gridHeight; row++)
         {
             for (int col = 0; col < gridWidth; col++)
             {
-                // Create interactive cell
                 GameObject cellObj = Instantiate(interactiveCellPrefab, gridContainer);
                 cellObj.name = $"InteractiveCell_{col}_{row}";
 
-                // Position the cell
                 RectTransform cellRect = cellObj.GetComponent<RectTransform>();
                 cellRect.sizeDelta = new Vector2(cellWidth, cellHeight);
 
@@ -144,20 +130,10 @@ public class ScheduleManager : MonoBehaviour
                 float posY = startY - (row * cellHeight);
                 cellRect.anchoredPosition = new Vector2(posX, posY);
 
-                // Initialize the GridCell component
                 GridCell gridCell = cellObj.GetComponent<GridCell>();
                 gridCell.Initialize(col, row);
                 grid[col, row] = gridCell;
             }
-        }
-    }
-
-    void PositionBlocksManually()
-    {
-        for (int i = 0; i < scheduleBlocks.Count && i < blockPositions.Length; i++)
-        {
-            RectTransform blockRect = scheduleBlocks[i].GetComponent<RectTransform>();
-            blockRect.anchoredPosition = blockPositions[i];
         }
     }
 
@@ -170,8 +146,10 @@ public class ScheduleManager : MonoBehaviour
         }
         scheduleBlocks.Clear();
 
-        // Spawn 4 blocks for Day 1 schedule items
-        for (int i = 0; i < 4; i++)
+        // Use current day's schedule items
+        string[] scheduleItems = currentDayData.scheduleItems;
+
+        for (int i = 0; i < scheduleItems.Length; i++)
         {
             GameObject blockObj = Instantiate(blockPrefabs[i], blockContainer);
             ScheduleBlock block = blockObj.GetComponent<ScheduleBlock>();
@@ -179,18 +157,27 @@ public class ScheduleManager : MonoBehaviour
             if (block == null)
                 block = blockObj.AddComponent<ScheduleBlock>();
 
-            block.Initialize(day1ScheduleItems[i], this);
+            block.Initialize(scheduleItems[i], this);
             scheduleBlocks.Add(block);
+        }
+    }
 
-            // Position blocks in a row below the grid
-            RectTransform blockRect = blockObj.GetComponent<RectTransform>();
-            blockRect.anchoredPosition = new Vector2(i * 100f - 150f, -300f);
+    void PositionBlocksManually()
+    {
+        Vector2[] positions = currentDayData.blockPositions;
+
+        for (int i = 0; i < scheduleBlocks.Count && i < positions.Length; i++)
+        {
+            RectTransform blockRect = scheduleBlocks[i].GetComponent<RectTransform>();
+            blockRect.anchoredPosition = positions[i];
         }
     }
 
     void StartScheduleGame()
     {
-        currentTime = timeLimit;
+        // Use current day's time limit and penalty
+        currentTime = currentDayData.timeLimit;
+
         isGameActive = true;
         isCompleted = false;
 
@@ -211,7 +198,6 @@ public class ScheduleManager : MonoBehaviour
 
         if (!isCompleted && isGameActive)
         {
-            // Time's up - failed
             FailSchedule();
         }
     }
@@ -222,11 +208,9 @@ public class ScheduleManager : MonoBehaviour
         int shapeWidth = shape.GetLength(0);
         int shapeHeight = shape.GetLength(1);
 
-        // Check if block fits within grid bounds
         if (gridX + shapeWidth > gridWidth || gridY + shapeHeight > gridHeight)
             return false;
 
-        // Check if all required cells are empty
         for (int x = 0; x < shapeWidth; x++)
         {
             for (int y = 0; y < shapeHeight; y++)
@@ -245,7 +229,6 @@ public class ScheduleManager : MonoBehaviour
         int shapeWidth = shape.GetLength(0);
         int shapeHeight = shape.GetLength(1);
 
-        // Mark grid cells as occupied
         for (int x = 0; x < shapeWidth; x++)
         {
             for (int y = 0; y < shapeHeight; y++)
@@ -263,7 +246,6 @@ public class ScheduleManager : MonoBehaviour
 
     public void RemoveBlock(ScheduleBlock block)
     {
-        // Find and clear all cells occupied by this block
         for (int x = 0; x < gridWidth; x++)
         {
             for (int y = 0; y < gridHeight; y++)
@@ -311,11 +293,7 @@ public class ScheduleManager : MonoBehaviour
             scheduleAttempted = true;
 
             instructionText.text = "Schedule completed successfully!";
-
-            // Enable schedule icon for next interaction (but it will show completion message)
-            FindObjectOfType<GameManager>().scheduleIcon.interactable = true;
-
-            // Trigger post-schedule dialogue
+            gameManager.scheduleIcon.interactable = true;
             StartCoroutine(CompleteScheduleSequence());
         }
     }
@@ -324,15 +302,14 @@ public class ScheduleManager : MonoBehaviour
     {
         isGameActive = false;
         isCompleted = false;
-        hasCompletedSchedule = false; // Failed, but still attempted
+        hasCompletedSchedule = false;
         scheduleAttempted = true;
 
         instructionText.text = "Time's up! Schedule organization failed.";
         timerText.text = "FAILED";
 
-        // Apply dependency penalty
-        FindObjectOfType<GameManager>().ModifyStats(0, dependencyPenalty);
-
+        // Apply dependency penalty from current day data
+        gameManager.ModifyStats(0, currentDayData.dependencyPenalty);
         StartCoroutine(CompleteScheduleSequence());
     }
 
@@ -343,12 +320,9 @@ public class ScheduleManager : MonoBehaviour
         schedulePanelProper.SetActive(false);
         schedulePanel.SetActive(false);
 
-        // Enable shutdown button to proceed to next day
-        FindObjectOfType<GameManager>().shutdownButton.interactable = true;
-        FindObjectOfType<GameManager>().shutdownButton.GetComponent<Image>().color = Color.white;
-
-        // Trigger end-of-day message
-        FindObjectOfType<GameManager>().StartEndOfDayDialogue();
+        gameManager.shutdownButton.interactable = true;
+        gameManager.shutdownButton.GetComponent<Image>().color = Color.white;
+        gameManager.StartEndOfDayDialogue();
     }
 
     public GridCell GetGridCell(int x, int y)
@@ -360,7 +334,6 @@ public class ScheduleManager : MonoBehaviour
 
     public void ShowPlacementPreview(ScheduleBlock block, int gridX, int gridY, bool canPlace)
     {
-        // Clear previous preview
         ClearPlacementPreview();
 
         bool[,] shape = block.GetShape();

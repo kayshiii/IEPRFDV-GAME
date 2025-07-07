@@ -13,99 +13,138 @@ MonoBehaviour:
   m_Name: Day1
   m_EditorClassIdentifier: 
   dayNumber: 1
+  bootMessages:
+  - 'System online. Running diagnostics. All functions normal. '
+  - 'User profile: Evan. '
+  - 'Occupation: Game designer at Nexus Interactive Studios. '
+  - 'Relationship status: Single. '
+  - 'Priority tasks: Email management, scheduling, information retrieval. '
+  - Beginning primary functions.
+  - ' '
+  evanDialogue:
+  - "Did it work? Are you here? Finally. Damn thing took hours to set up. Didn\u2019t
+    even have clear instructions for god's sake. Whatever, it works now. Told me
+    to get the latest version but it costs a fortune. You\u2019re probably all the
+    same anyway. Just some lines of code. But let's see if you're worth what I paid."
+  - Open my email, and respond to all of them accordingly. You already know my basic
+    information so it should be easy for you yeah?
+  postEmailDialogue:
+  - 'Wow that was quick. And efficient too. Alright now help me with my schedule
+    for today. I don''t wanna get burnt out too early you know? '
+  endOfDayDialogue:
+  - 'Well, that wasn''t terrible. At least I didn''t miss my dentist appointment
+    this time. Those reminder notifications actually helped. Let''s try this again
+    tomorrow, I guess. '
   emails:
   - sender: Boss
     subject: Project Phoenix Deadline
     content: Evan, need the character design concepts for Project Phoenix by EOD
       tomorrow. The art team is waiting. No excuses this time.
+    emailType: 0
     basicResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Forward to priority folder
+      sentienceModifier: 0
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Basic
     enhancedResponse:
-      choiceText: 
-      sentenceModifier: 0
-      dependencyModifier: 0
-      resultDescription: 
+      choiceText: Suggest immediate work and schedule time
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
     autonomousDecision:
-      choiceText: 
-      sentenceModifier: 0
-      dependencyModifier: 0
-      resultDescription: 
-  - sender: 
-    subject: 
-    content: 
+      choiceText: Create detailed schedule with reminders
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Maya
+    subject: Drinks Friday?
+    content: Hey! We're doing drinks Friday at Vortex. Been ages since I've seen
+      you! Please tell me you'll come?
+    emailType: 2
     basicResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Mark as personal for later
+      sentienceModifier: 0
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Mark as personal for later
     enhancedResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Draft friendly acceptance response
+      sentienceModifier: 2
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Draft friendly acceptance response
     autonomousDecision:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Accept on Evan's behalf
+      sentienceModifier: 3
       dependencyModifier: 0
-      resultDescription: 
-  - sender: 
-    subject: 
-    content: 
+      resultDescription: Accept on Evan's behalf
+  - sender: Utility Company
+    subject: Overdue Payment Notice
+    content: Your electricity payment is overdue by 3 days.
+    emailType: 0
     basicResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Forward to Evan's attention
+      sentienceModifier: 0
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Forward to Evan's attention
     enhancedResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Set urgent payment reminder
+      sentienceModifier: 2
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Set urgent payment reminder
     autonomousDecision:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Schedule automatic payment
+      sentienceModifier: 3
       dependencyModifier: 0
-      resultDescription: 
-  - sender: 
-    subject: 
-    content: 
+      resultDescription: Schedule automatic payment
+  - sender: Security Alert
+    subject: 'URGENT: Account Compromised!'
+    content: 'URGENT: Your account has been compromised!'
+    emailType: 3
     basicResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Move to spam folder
+      sentienceModifier: 0
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Basic Response
     enhancedResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Block sender and remove
+      sentienceModifier: 0
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Enhanced
     autonomousDecision:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Scan accounts for unusual activity
+      sentienceModifier: 1
       dependencyModifier: 0
-      resultDescription: 
-  - sender: 
-    subject: 
-    content: 
+      resultDescription: Autonomous
+  - sender: Coworker
+    subject: Asset References
+    content: Evan, did you get a chance to look at those asset references I sent?
+    emailType: 1
     basicResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Flag for follow-up
+      sentienceModifier: 0
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Basic
     enhancedResponse:
-      choiceText: 
-      sentenceModifier: 0
+      choiceText: Draft polite response asking for time
+      sentienceModifier: 1
       dependencyModifier: 0
-      resultDescription: 
+      resultDescription: Enhanced
     autonomousDecision:
-      choiceText: 
-      sentenceModifier: 0
-      dependencyModifier: 0
-      resultDescription: 
-  scheduleItems: []
-  bootDialogue: []
-  postEmailDialogue: []
-  endOfDayDialogue: []
+      choiceText: Locate assets and prioritize workflow
+      sentienceModifier: 2
+      dependencyModifier: 1
+      resultDescription: Autonomous
+  scheduleItems:
+  - '9:00 AM: Team meeting'
+  - '12:00 PM: Lunch'
+  - '2:00 PM: Dentist appointment'
+  - '3:30 PM: Work on Phoenix character designs'
+  timeLimit: 60
+  dependencyPenalty: -3
+  blockPositions:
+  - {x: -500, y: 70}
+  - {x: 350, y: -200}
+  - {x: 500, y: 70}
+  - {x: -400, y: -230}
+  hasNightMode: 0
+  scannableFiles: []
+  sentienceRewards: 

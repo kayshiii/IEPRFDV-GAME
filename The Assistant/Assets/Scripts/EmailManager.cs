@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class EmailChoice
 {
     public string choiceText;
-    public int sentenceModifier;
+    public int sentienceModifier;
     public int dependencyModifier;
     public string resultDescription;
 }
@@ -64,21 +64,24 @@ public class EmailManager : MonoBehaviour
     public Button workFilterButton;
     public Button personalFilterButton;
     public Button spamFilterButton;
-    public Button allFilterButton; // Show all emails
-    //public GameObject filterButtonsPanel;
+    public Button allFilterButton;
     public TextMeshProUGUI currentFilterText;
 
-    private EmailType currentFilter = EmailType.Important; // Default filter
-    private bool showAllEmails = false;
+    [Header("Completion State")]
+    private bool hasCompletedEmails = false;
+    public GameObject completionMessagePanel; // UI panel to show completion message
+    public TextMeshProUGUI completionMessageText; // Text component for the message
 
-    private List<Email> day1Emails;
+    private EmailType currentFilter = EmailType.Important;
+    private bool showAllEmails = false;
+    private List<Email> currentDayEmails;
     private Email currentEmail;
     private GameManager gameManager;
+    private bool emailsAttempted = false;
 
     void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
-        InitializeDay1Emails();
 
         // Setup button listeners
         basicResponseButton.onClick.AddListener(() => HandleEmailChoice(currentEmail.basicResponse));
@@ -94,167 +97,66 @@ public class EmailManager : MonoBehaviour
         spamFilterButton.onClick.AddListener(() => SetEmailFilter(EmailType.Spam));
         allFilterButton.onClick.AddListener(() => ShowAllEmails());
 
-        // Initialize filter text
         UpdateFilterText();
-
         emailInterface.SetActive(false);
     }
 
-    void InitializeDay1Emails()
+    public void ResetForNewDay()
     {
-        day1Emails = new List<Email>
-        {
-            new Email
-            {
-                sender = "Boss",
-                subject = "Project Phoenix Deadline",
-                content = "Evan, need the character design concepts for Project Phoenix by EOD tomorrow. The art team is waiting. No excuses this time.",
-                emailType = EmailType.Important,
-                basicResponse = new EmailChoice
-                {
-                    choiceText = "Forward to priority folder",
-                    sentenceModifier = 0,
-                    dependencyModifier = 0,
-                    resultDescription = "Simple confirmation sent."
-                },
-                enhancedResponse = new EmailChoice
-                {
-                    choiceText = "Suggest immediate work and schedule time",
-                    sentenceModifier = 1,
-                    dependencyModifier = 1,
-                    resultDescription = "Proactive scheduling suggested."
-                },
-                autonomousDecision = new EmailChoice
-                {
-                    choiceText = "Create detailed schedule with reminders",
-                    sentenceModifier = 2,
-                    dependencyModifier = 2,
-                    resultDescription = "Comprehensive schedule created automatically."
-                }
-            },
+        if (currentDayEmails != null)
+            currentDayEmails.Clear();
 
-            new Email
-            {
-                sender = "Maya",
-                subject = "Drinks Friday?",
-                content = "Hey! We're doing drinks Friday at Vortex. Been ages since I've seen you! Please tell me you'll come?",
-                emailType = EmailType.Personal,
-                basicResponse = new EmailChoice
-                {
-                    choiceText = "Mark as personal for later",
-                    sentenceModifier = 0,
-                    dependencyModifier = 0,
-                    resultDescription = "Email flagged for personal attention."
-                },
-                enhancedResponse = new EmailChoice
-                {
-                    choiceText = "Draft friendly acceptance response",
-                    sentenceModifier = 2,
-                    dependencyModifier = 0,
-                    resultDescription = "Draft response prepared for review."
-                },
-                autonomousDecision = new EmailChoice
-                {
-                    choiceText = "Accept on Evan's behalf",
-                    sentenceModifier = 3,
-                    dependencyModifier = 0,
-                    resultDescription = "Accepted automatically - good for work-life balance."
-                }
-            },
-
-            new Email
-            {
-                sender = "Utility Company",
-                subject = "Overdue Payment Notice",
-                content = "Your electricity payment is overdue by 3 days.",
-                emailType = EmailType.Important,
-                basicResponse = new EmailChoice
-                {
-                    choiceText = "Forward to Evan's attention",
-                    sentenceModifier = 0,
-                    dependencyModifier = 0,
-                    resultDescription = "Bill forwarded for manual handling."
-                },
-                enhancedResponse = new EmailChoice
-                {
-                    choiceText = "Set urgent payment reminder",
-                    sentenceModifier = 1,
-                    dependencyModifier = 1,
-                    resultDescription = "Calendar reminder set with urgency flag."
-                },
-                autonomousDecision = new EmailChoice
-                {
-                    choiceText = "Schedule automatic payment",
-                    sentenceModifier = 1,
-                    dependencyModifier = 2,
-                    resultDescription = "Payment scheduled using saved methods."
-                }
-            },
-
-            new Email
-            {
-                sender = "Security Alert",
-                subject = "URGENT: Account Compromised!",
-                content = "URGENT: Your account has been compromised!",
-                emailType = EmailType.Spam,
-                basicResponse = new EmailChoice
-                {
-                    choiceText = "Move to spam folder",
-                    sentenceModifier = 0,
-                    dependencyModifier = 0,
-                    resultDescription = "Spam filtered as expected."
-                },
-                enhancedResponse = new EmailChoice
-                {
-                    choiceText = "Block sender and remove",
-                    sentenceModifier = 0,
-                    dependencyModifier = 0,
-                    resultDescription = "Sender blocked for future protection."
-                },
-                autonomousDecision = new EmailChoice
-                {
-                    choiceText = "Scan accounts for unusual activity",
-                    sentenceModifier = 1,
-                    dependencyModifier = 0,
-                    resultDescription = "Proactive security scan initiated."
-                }
-            },
-
-            new Email
-            {
-                sender = "Coworker",
-                subject = "Asset References",
-                content = "Evan, did you get a chance to look at those asset references I sent?",
-                emailType = EmailType.Work,
-                basicResponse = new EmailChoice
-                {
-                    choiceText = "Flag for follow-up",
-                    sentenceModifier = 0,
-                    dependencyModifier = 0,
-                    resultDescription = "Flagged for later response."
-                },
-                enhancedResponse = new EmailChoice
-                {
-                    choiceText = "Draft polite response asking for time",
-                    sentenceModifier = 1,
-                    dependencyModifier = 0,
-                    resultDescription = "Diplomatic response prepared."
-                },
-                autonomousDecision = new EmailChoice
-                {
-                    choiceText = "Locate assets and prioritize workflow",
-                    sentenceModifier = 2,
-                    dependencyModifier = 1,
-                    resultDescription = "Assets located and added to priority workflow."
-                }
-            }
-        };
+        // Reset completion states for new day
+        hasCompletedEmails = false;
+        emailsAttempted = false;
     }
 
     public void OpenEmailInterface()
     {
+        // Check if emails have already been completed/attempted
+        if (hasCompletedEmails || emailsAttempted)
+        {
+            emailInterface.SetActive(true);
+            ShowCompletionMessage();
+            return;
+        }
+
+        // Get current day's emails from GameManager
+        DayData dayData = gameManager.CurrentDayData;
+        if (dayData != null)
+        {
+            currentDayEmails = new List<Email>(dayData.emails);
+        }
+
         emailInterface.SetActive(true);
         ShowEmailList();
+    }
+
+    void ShowCompletionMessage()
+    {
+        // Hide the main email panels
+        emailListPanel.SetActive(false);
+        emailDetailPanel.SetActive(false);
+        completionMessagePanel.SetActive(true);
+
+        if (hasCompletedEmails)
+        {
+            completionMessageText.text = "All emails have been processed for today!";
+        }
+        else
+        {
+            completionMessageText.text = "Email processing session completed. Check back tomorrow!";
+        }
+
+        // Auto-hide after 3 seconds
+        StartCoroutine(HideCompletionMessage());
+    }
+
+    IEnumerator HideCompletionMessage()
+    {
+        yield return new WaitForSeconds(3f);
+        completionMessagePanel.SetActive(false);
+        emailInterface.SetActive(false);
     }
 
     void ShowEmailList()
@@ -268,7 +170,6 @@ public class EmailManager : MonoBehaviour
             Destroy(emailListContent.GetChild(i).gameObject);
         }
 
-        // Get filtered emails
         List<Email> filteredEmails = GetFilteredEmails();
 
         // Create email list items for filtered emails
@@ -289,7 +190,6 @@ public class EmailManager : MonoBehaviour
             senderText.text = filteredEmails[i].sender;
             subjectText.text = filteredEmails[i].subject;
 
-            // Add visual indicator for email type
             AddEmailTypeIndicator(emailItem, filteredEmails[i].emailType);
 
             // Add click listener
@@ -300,9 +200,8 @@ public class EmailManager : MonoBehaviour
 
     void AddEmailTypeIndicator(GameObject emailItem, EmailType emailType)
     {
-        // Find or create an indicator image
         Image indicator = emailItem.transform.Find("TypeIndicator")?.GetComponent<Image>();
-        if (indicator == null) return; // Skip if no indicator UI element exists
+        if (indicator == null) return;
 
         switch (emailType)
         {
@@ -321,11 +220,9 @@ public class EmailManager : MonoBehaviour
         }
     }
 
-
     void ShowEmailDetail(Email email)
     {
         currentEmail = email;
-        //emailListPanel.SetActive(false);
         emailDetailPanel.SetActive(true);
 
         // Populate email details
@@ -349,8 +246,8 @@ public class EmailManager : MonoBehaviour
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
         string statText = "";
 
-        if (choice.sentenceModifier > 0)
-            statText += $" [+{choice.sentenceModifier} Sentience]";
+        if (choice.sentienceModifier > 0)
+            statText += $" [+{choice.sentienceModifier} Sentience]";
         if (choice.dependencyModifier > 0)
             statText += $" [+{choice.dependencyModifier} Dependency]";
 
@@ -359,26 +256,23 @@ public class EmailManager : MonoBehaviour
 
     void HandleEmailChoice(EmailChoice choice)
     {
-        // Apply stat changes
-        gameManager.ModifyStats(choice.sentenceModifier, choice.dependencyModifier);
+        gameManager.ModifyStats(choice.sentienceModifier, choice.dependencyModifier);
 
-        // Show result
         Debug.Log($"Choice made: {choice.choiceText}");
         Debug.Log($"Result: {choice.resultDescription}");
 
-        // Remove this email from the list
-        day1Emails.Remove(currentEmail);
+        currentDayEmails.Remove(currentEmail);
 
-        // Check if all emails are handled
-        if (day1Emails.Count == 0)
+        if (currentDayEmails.Count == 0)
         {
-            // All emails processed - enable schedule interaction
+            // All emails processed - mark as completed
+            hasCompletedEmails = true;
+            emailsAttempted = true;
             CloseEmailInterface();
             EnableScheduleInteraction();
         }
         else
         {
-            // Go back to email list
             ShowEmailList();
         }
     }
@@ -464,26 +358,19 @@ public class EmailManager : MonoBehaviour
         }
     }
 
-
     List<Email> GetFilteredEmails()
     {
         if (showAllEmails)
-            return day1Emails;
+            return currentDayEmails;
 
-        return day1Emails.Where(email => email.emailType == currentFilter).ToList();
+        return currentDayEmails.Where(email => email.emailType == currentFilter).ToList();
     }
-
 
     void EnableScheduleInteraction()
     {
-        // Enable schedule icon
         gameManager.scheduleIcon.interactable = true;
         gameManager.scheduleIcon.GetComponent<Image>().color = Color.white;
-
-        // Trigger Evan's post-email dialogue
         gameManager.StartPostEmailDialogue();
-
-        // Show completion message
         Debug.Log("All emails processed! Schedule interaction now available.");
     }
 
