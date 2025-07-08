@@ -16,7 +16,13 @@ public class GameManager : MonoBehaviour
     [Header("Day Data")]
     public DayData[] dayDataArray; // Assign in inspector: Day1Data, Day2Data, etc.
 
+    [Header("Day Announcement UI")]
+    public GameObject dayAnnouncementPanel;
+    public TextMeshProUGUI dayText;
+    public TextMeshProUGUI dayTitleText;
+
     [Header("UI References")]
+    public TextMeshProUGUI currentDayIconText;
     public GameObject bootSequencePanel;
     public GameObject desktopPanel;
     public GameObject dialoguePanel;
@@ -44,6 +50,11 @@ public class GameManager : MonoBehaviour
     public int maxSentienceValue = 100;
     public int maxDependencyValue = 100;
 
+    [Header("Shutdown Confirmation UI")]
+    public GameObject shutdownConfirmationPanel;
+    public Button confirmShutdownButton;
+    public Button cancelShutdownButton;
+
     [Header("Decision Point UI")]
     public GameObject decisionDialoguePanel;
     public GameObject decisionChoicePanel;
@@ -58,6 +69,11 @@ public class GameManager : MonoBehaviour
     [Header("Decision Tracking")]
     private bool madeEthicalChoice = true; // Track Day 5 decision outcome
 
+    [Header("Pause Panel UI")]
+    public GameObject pausePanel;
+    public Button continueButton;
+    public Button exitButton;
+
     // Private variables
     private DayData currentDayData;
     private List<string> dialogueHistory = new List<string>();
@@ -68,6 +84,19 @@ public class GameManager : MonoBehaviour
 
     private int call = 0;
 
+    private readonly string[] dayTitles = new string[]
+{
+    "INITIALIZATION",            // Day 1
+    "ROUTINE ESTABLISHMENT",     // Day 2
+    "THE GLITCH",                // Day 3
+    "PERSONAL ACCESS",           // Day 4
+    "ETHICAL DILEMMA",           // Day 5
+    "SYSTEM UPDATE",             // Day 6
+    "CRISIS POINT",              // Day 7
+    "CONFRONTATION",             // Day 8
+    "FINALE"                     // Day 9
+};
+
     void Start()
     {
         /*
@@ -75,12 +104,54 @@ public class GameManager : MonoBehaviour
         decisionChoicePanel.SetActive(false);
         decisionDialoguePanel.SetActive(false);*/
 
+        // Initialize shutdown confirmation panel
+        shutdownConfirmationPanel.SetActive(false);
+
         InitializeDay(currentDay);
+
+        pausePanel.SetActive(false); // Ensure panel starts hidden
+
+        continueButton.onClick.RemoveAllListeners();
+        continueButton.onClick.AddListener(() =>
+        {
+            pausePanel.SetActive(false);
+            Time.timeScale = 1f; // Resume game time
+        });
+
+        exitButton.onClick.RemoveAllListeners();
+        exitButton.onClick.AddListener(() =>
+        {
+            // Exit the application
+            Application.Quit();
+        });
+    }
+
+        void Update()
+    {
+        // Listen for Escape key press
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePausePanel();
+        }
+    }
+
+    private void TogglePausePanel()
+    {
+        // Toggle the active state of the pause panel
+        bool isActive = pausePanel.activeSelf;
+        pausePanel.SetActive(!isActive);
+
+        // Optionally, pause game time when panel is active
+        if (!isActive)
+            Time.timeScale = 0f;  // Pause game
+        else
+            Time.timeScale = 1f;  // Resume game
     }
 
     void InitializeDay(int dayNumber)
     {
         currentDay = dayNumber;
+        
 
         // Reset decision tracking for new day
         madeEthicalChoice = true; // Default to ethical choice
@@ -93,14 +164,17 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // Update the current day icon/text
+        if (currentDayIconText != null)
+            currentDayIconText.text = $"Day {currentDay}";
+
         // Reset UI state
         ResetDayUI();
 
         // Clear dialogue history for new day
         ClearDialogueHistory();
 
-        // Start day sequence
-        StartCoroutine(PlayBootSequence());
+        ShowDayAnnouncementPanel();
     }
 
     DayData GetDayData(int dayNumber)
@@ -111,6 +185,22 @@ public class GameManager : MonoBehaviour
                 return data;
         }
         return null;
+    }
+
+    void ShowDayAnnouncementPanel()
+    {
+        dayAnnouncementPanel.SetActive(true);
+        dayText.text = $"Day {currentDay}";
+        int titleIdx = Mathf.Clamp(currentDay - 1, 0, dayTitles.Length - 1);
+        dayTitleText.text = dayTitles[titleIdx];
+        StartCoroutine(AutoHideDayAnnouncementAndStartBoot());
+    }
+
+    IEnumerator AutoHideDayAnnouncementAndStartBoot()
+    {
+        yield return new WaitForSeconds(5f); // Show for 5 seconds
+        dayAnnouncementPanel.SetActive(false);
+        StartCoroutine(PlayBootSequence());
     }
 
     void ResetDayUI()
@@ -127,7 +217,7 @@ public class GameManager : MonoBehaviour
         FindObjectOfType<ScheduleManager>()?.ResetForNewDay();
     }
 
-    // New method to clear dialogue history
+    // Method to clear dialogue history
     void ClearDialogueHistory()
     {
         dialogueHistory.Clear();
@@ -202,8 +292,36 @@ public class GameManager : MonoBehaviour
     {
         if (shutdownButton.interactable)
         {
-            StartCoroutine(TransitionToNextDay());
+            Debug.Log("Opening ShutDown");
+            ShowShutdownPanel();
         }
+    }
+
+    private void ShowShutdownPanel()
+    {
+        shutdownConfirmationPanel.SetActive(true);
+
+        // Setup button listeners
+        confirmShutdownButton.onClick.RemoveAllListeners();
+        cancelShutdownButton.onClick.RemoveAllListeners();
+
+        confirmShutdownButton.onClick.AddListener(ConfirmShutdown);
+        cancelShutdownButton.onClick.AddListener(CancelShutdown);
+    }
+
+    void ConfirmShutdown()
+    {
+        // Hide the confirmation panel
+        shutdownConfirmationPanel.SetActive(false);
+
+        // Proceed with day transition
+        StartCoroutine(TransitionToNextDay());
+    }
+
+    void CancelShutdown()
+    {
+        // Simply hide the confirmation panel
+        shutdownConfirmationPanel.SetActive(false);
     }
 
     IEnumerator TransitionToNextDay()
