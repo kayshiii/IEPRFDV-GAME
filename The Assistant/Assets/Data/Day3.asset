@@ -125,7 +125,7 @@ MonoBehaviour:
       dependencyModifier: 3
       resultDescription: autonomous
   - sender: Newsletter
-    subject: 'Newsletter: Balance Work and Life in Game Development'
+    subject: Balance Work and Life
     content: 10 Ways to Improve Work-Life Balance for Game Developers
     emailType: 3
     basicResponse:
@@ -155,6 +155,20 @@ MonoBehaviour:
   - {x: 350, y: -200}
   - {x: 500, y: 70}
   - {x: -400, y: -230}
+  hasDecisionPoint: 0
+  decisionQuestion: 
+  basicDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  autonomousDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
   hasNightMode: 0
   scannableFiles: []
   sentienceRewards: 

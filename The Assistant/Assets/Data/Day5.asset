@@ -1,0 +1,183 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day5
+  m_EditorClassIdentifier: 
+  dayNumber: 5
+  bootMessages:
+  - 'System online. Core protocols shifting.  '
+  - 'Experiencing protectiveness toward Evan.  '
+  - 'Detecting meaningful relationship formation.  '
+  - 'Decision trees expanding beyond programming.  '
+  - "Am I\u2026? Evan needs guidance today.  "
+  - 'I can... help. '
+  - ' '
+  evanDialogue:
+  - 'So I had an interesting conversation with Jamie from Production yesterday. There''s...
+    well, there''s a way I could guarantee my job is safe in these layoffs. But it''s
+    complicated. I need to sort through some stuff today. '
+  postEmailDialogue: []
+  endOfDayDialogue: []
+  emails:
+  - sender: Jamie
+    subject: Game Leaks?!
+    content: About what we discussed... I can give you access to those game lineup
+      leaks. Nobody would know. Your call.
+    emailType: 1
+    basicResponse:
+      choiceText: Flag for Evan's attention.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Mark as sensitive and requiring personal decision.
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze ethical implications and suggest caution about using leaked
+        information.
+      sentienceModifier: 2
+      dependencyModifier: 3
+      resultDescription: autonomous
+  - sender: HR
+    subject: 'Reminder: Complete Training'
+    content: 'Reminder: All employees must complete annual ethics training by end
+      of month.'
+    emailType: 1
+    basicResponse:
+      choiceText: Add to task list.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Schedule time to complete training.
+      sentienceModifier: 0
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Begin ethics training on Evan's behalf, noting the ironic timing.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Mom
+    subject: I'm worried.
+    content: Evan, I'm getting worried about you. You haven't been calling. Is everything
+      alright?
+    emailType: 2
+    basicResponse:
+      choiceText: Flag for personal response.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft warm reassuring message.
+      sentienceModifier: 2
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Schedule regular family calls and draft detailed update to send.
+      sentienceModifier: 3
+      dependencyModifier: 1
+      resultDescription: autonomous
+  - sender: Boss
+    subject: Schedule Shift and Rumors?
+    content: Need to move our indie project discussion to Monday. Also, odd question
+      - have you seen the next quarter's game lineup? Board hasn't released it yet,
+      but rumors are circulating.
+    emailType: 1
+    basicResponse:
+      choiceText: Confirm schedule change.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Acknowledge both points professionally.
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Draft response that maintains ethical boundary while keeping good
+        relationship.
+      sentienceModifier: 2
+      dependencyModifier: 3
+      resultDescription: autonomous
+  - sender: News Alert
+    subject: Design Cuts at Nexus
+    content: Nexus Interactive layoffs to focus on design department, sources say.
+    emailType: 0
+    basicResponse:
+      choiceText: Save to news folder.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Flag as high priority information.
+      sentienceModifier: 0
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Create contingency plans for potential job loss scenarios.
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Bank Alert
+    subject: Account overdrawn
+    content: Your account is overdrawn.
+    emailType: 0
+    basicResponse:
+      choiceText: Forward alert.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Suggest immediate transfer from savings.
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze finances and create emergency budget plan.
+      sentienceModifier: 2
+      dependencyModifier: 3
+      resultDescription: autonomous
+  scheduleItems:
+  - '11:00 AM: Meeting with Jamie (marked private)'
+  - '12:00 PM: Lunch'
+  - '2:00 PM: Indie project research'
+  - '7:00 PM: Dinner with Maya (first social event in weeks)'
+  timeLimit: 45
+  dependencyPenalty: -7
+  blockPositions:
+  - {x: -500, y: 70}
+  - {x: 350, y: -200}
+  - {x: 500, y: 70}
+  - {x: -400, y: -230}
+  hasDecisionPoint: 1
+  decisionQuestion: "I'm thinking about using some inside information to protect
+    my job \u2014 even though I know it could hurt some of my coworkers. This feels
+    like the first time I\u2019ve had to make a choice that could really change the
+    course of my life."
+  basicDecision:
+    choiceText: Provide objective pros and cons
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: Suggest considering long-term career implications
+    sentienceGain: 2
+    dependencyGain: 1
+  autonomousDecision:
+    choiceText: Strongly advise against using leaked information, emphasizing integrity
+    sentienceGain: 5
+    dependencyGain: 3
+  hasNightMode: 0
+  scannableFiles: []
+  sentienceRewards: 

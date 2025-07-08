@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
     public int maxSentienceValue = 100;
     public int maxDependencyValue = 100;
 
-    [Header("Decision Point UI for DAY 4")]
+    [Header("Decision Point UI")]
     public GameObject decisionDialoguePanel;
     public GameObject decisionChoicePanel;
     public TextMeshProUGUI decisionDialogueText;
@@ -55,6 +55,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI enhancedDecisionText;
     public TextMeshProUGUI autonomousDecisionText;
 
+    [Header("Decision Tracking")]
+    private bool madeEthicalChoice = true; // Track Day 5 decision outcome
 
     // Private variables
     private DayData currentDayData;
@@ -68,14 +70,14 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Setup decision point button listeners
+        /*// Setup decision point button listeners
         basicDecisionButton.onClick.AddListener(OnBasicDecisionClicked);
         enhancedDecisionButton.onClick.AddListener(OnEnhancedDecisionClicked);
         autonomousDecisionButton.onClick.AddListener(OnAutonomousDecisionClicked);
 
         // Hide decision panel initially
         decisionChoicePanel.SetActive(false);
-        decisionDialoguePanel.SetActive(false);
+        decisionDialoguePanel.SetActive(false);*/
 
         InitializeDay(currentDay);
     }
@@ -83,6 +85,9 @@ public class GameManager : MonoBehaviour
     void InitializeDay(int dayNumber)
     {
         currentDay = dayNumber;
+
+        // Reset decision tracking for new day
+        madeEthicalChoice = true; // Default to ethical choice
 
         // Get day-specific data
         currentDayData = GetDayData(dayNumber);
@@ -429,6 +434,26 @@ public class GameManager : MonoBehaviour
                 };
             }
         }
+        // Handle Day 5's conditional end-of-day messages
+        else if (currentDay == 5)
+        {
+            if (madeEthicalChoice)
+            {
+                endMessages = new string[] {
+                "I told Jamie I couldn't use that information. It felt... right, actually. Like maybe integrity is all I've got left right now. " +
+                "The dinner with Maya was good too. She says I've seemed more centered this week. " +
+                "I don't know about that, but I do feel like I'm making slightly better choices. Maybe I'm not totally screwing everything up after all."
+                };
+            }
+            else
+            {
+                endMessages = new string[] {
+                "I've got the files from Jamie. This changes everything. I know exactly how to position myself now. " +
+                "It feels weird, but hey, it's the industry, right? Everyone does what they need to survive. " +
+                "Strange though... had dinner with Maya and she said I seemed different somehow. Not sure if that's good or bad."
+                };
+            }
+        }
         else
         {
             // Use default end-of-day dialogue for other days
@@ -456,131 +481,115 @@ public class GameManager : MonoBehaviour
     // Public getter for current day data
     public DayData CurrentDayData => currentDayData;
 
-    public void StartDecisionPointDialogue()
+    /*public void StartDecisionPointDialogue()
     {
         StartCoroutine(PlayDecisionPointDialogue());
+    }*/
+
+    public void TriggerDecisionPoint()
+    {
+        if (!CurrentDayData.hasDecisionPoint)      // safety check
+        {
+            StartEndOfDayDialogue();               // fallback
+            return;
+        }
+        StartCoroutine(DecisionPointRoutine());
     }
 
-    IEnumerator PlayDecisionPointDialogue()
+    IEnumerator DecisionPointRoutine()
     {
-        // Only trigger on Day 4
-        if (currentDay != 4)
-        {
-            // Skip to end of day for other days
-            StartEndOfDayDialogue();
-            yield break;
-        }
-
         decisionDialoguePanel.SetActive(true);
-
-        string decisionQuestion = "Do you think I should respond to my ex? It ended badly, but I wouldn't mind talking again. " +
-            "At least as friends you know? Ahh, I don't know anymore. What would you do?";
-
         string evanPrefix = "Evan: ";
 
-        // Type out Evan's question
+        // 1) Type Evan’s question
         decisionDialogueText.text = evanPrefix;
-        foreach (char letter in decisionQuestion.ToCharArray())
+        foreach (char c in CurrentDayData.decisionQuestion)
         {
-            decisionDialogueText.text += letter;
+            decisionDialogueText.text += c;
             yield return new WaitForSeconds(0.05f);
         }
-        AddToDialogueHistory(evanPrefix + decisionQuestion);
+        AddToDialogueHistory(evanPrefix + CurrentDayData.decisionQuestion);
+        yield return new WaitForSeconds(0.75f);
 
-        yield return new WaitForSeconds(1f);
-
-        // Show decision choices
-        ShowDecisionChoices();
-    }
-
-    void ShowDecisionChoices()
-    {
-        // Hide dialogue panel and show decision choice panel
-        decisionDialoguePanel.SetActive(true);
+        // 2) Show choice panel
         decisionChoicePanel.SetActive(true);
 
-        // Set up the choice texts
-        basicDecisionText.text = "Suggest considering pros and cons first.";
-        enhancedDecisionText.text = "Recommend caution but validate Evan's feelings.";
-        autonomousDecisionText.text = "Advise against it based on analysis of previous relationship patterns.";
+        // Populate texts (stat tags optional)
+        SetDecisionButton(basicDecisionButton, basicDecisionText, CurrentDayData.basicDecision);
+        SetDecisionButton(enhancedDecisionButton, enhancedDecisionText, CurrentDayData.enhancedDecision);
+        SetDecisionButton(autonomousDecisionButton, autonomousDecisionText, CurrentDayData.autonomousDecision);
 
-        // Add stat indicators
-        basicDecisionButton.GetComponentInChildren<TextMeshProUGUI>().text = "Suggest considering pros and cons first. [+0]";
-        enhancedDecisionButton.GetComponentInChildren<TextMeshProUGUI>().text = "Recommend caution but validate Evan's feelings. [+2 Sentience, +1 Dependency]";
-        autonomousDecisionButton.GetComponentInChildren<TextMeshProUGUI>().text = "Advise against it based on analysis of previous relationship patterns. [+3 Sentience, +2 Dependency]";
+        // Wire buttons once
+        basicDecisionButton.onClick.RemoveAllListeners();
+        enhancedDecisionButton.onClick.RemoveAllListeners();
+        autonomousDecisionButton.onClick.RemoveAllListeners();
+
+        if (currentDay == 5)
+        {
+            // Day 5 specific - track ethical vs unethical choice
+            basicDecisionButton.onClick.AddListener(() => HandleDay5DecisionChoice(CurrentDayData.basicDecision, false)); // Unethical
+            enhancedDecisionButton.onClick.AddListener(() => HandleDay5DecisionChoice(CurrentDayData.enhancedDecision, false)); // Unethical
+            autonomousDecisionButton.onClick.AddListener(() => HandleDay5DecisionChoice(CurrentDayData.autonomousDecision, true)); // Ethical
+        }
+        else
+        {
+            // Other days use generic handler
+            basicDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.basicDecision));
+            enhancedDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.enhancedDecision));
+            autonomousDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.autonomousDecision));
+        }
     }
 
-    public void OnBasicDecisionClicked()
+    void HandleDay5DecisionChoice(DayData.DecisionChoice choice, bool isEthical)
     {
-        /*HandleDecisionChoice(0, 0, "I think you should take some time to consider the pros and cons first. What are you hoping to get out of reconnecting?");*/
-        HandleDecisionChoice(0, 0);
-    }
+        // Track the ethical choice for end-of-day message
+        madeEthicalChoice = isEthical;
 
-    public void OnEnhancedDecisionClicked()
-    {
-        /*HandleDecisionChoice(2, 1, "I understand you're feeling conflicted about this. It's natural to miss someone who was important to you. " +
-            "However, given how it ended, maybe proceed with caution? Your feelings are valid, but protecting your emotional wellbeing should be the priority.");*/
-        HandleDecisionChoice(2, 1);
-    }
-
-    public void OnAutonomousDecisionClicked()
-    {
-        /*HandleDecisionChoice(3, 2, "Based on your previous relationship patterns and the way this ended, I'd advise against reaching out. " +
-            "You've been making good progress with your mental health and stability. Reopening old wounds might set you back when you're already dealing with work stress.");*/
-        HandleDecisionChoice(3, 2);
-    }
-
-    void HandleDecisionChoice(int sentienceGain, int dependencyGain/*, string aiResponse*/)
-    {
         // Apply stat changes
-        ModifyStats(sentienceGain, dependencyGain);
+        ModifyStats(choice.sentienceGain, choice.dependencyGain);
 
         // Hide decision panel
         decisionChoicePanel.SetActive(false);
         decisionDialoguePanel.SetActive(false);
 
-        // Show AI response
-        //StartCoroutine(ShowAIDecisionResponse(aiResponse));
-
-        call++;
-
-        if (call == 1)
-        {
-            // Continue to end of day
-            StartEndOfDayDialogue();
-            Debug.Log("gamemanager");
-
-            if (currentDay == 4)
-            {
-                call = -1;
-            }
-            else
-            {
-                call = 0;
-            }
-
-        }
+        StartEndOfDayDialogue();
     }
-}
 
-    /*IEnumerator ShowAIDecisionResponse(string response)
+    void SetDecisionButton(Button btn, TextMeshProUGUI txt, DayData.DecisionChoice choice)
+    {
+        string tag = "";
+        if (choice.sentienceGain > 0) tag += $" [+{choice.sentienceGain} S]";
+        if (choice.dependencyGain > 0) tag += $" [+{choice.dependencyGain} D]";
+        txt.text = choice.choiceText + tag;
+    }
+
+    void HandleDecisionChoice(DayData.DecisionChoice choice)
+    {
+        ModifyStats(choice.sentienceGain, choice.dependencyGain);
+
+        // Hide panel, show AI response
+        decisionDialoguePanel.SetActive(false);
+        decisionChoicePanel.SetActive(false);
+        //StartCoroutine(PlayAIDecisionResponse(choice.aiResponse));
+
+        StartEndOfDayDialogue();        // continue normal flow
+    }
+
+    /*IEnumerator PlayAIDecisionResponse(string response)
     {
         dialoguePanel.SetActive(true);
-
         string aiPrefix = "Assistant: ";
-
-        // Type out AI response
         dialogueText.text = aiPrefix;
-        foreach (char letter in response.ToCharArray())
+        foreach (char c in response)
         {
-            dialogueText.text += letter;
+            dialogueText.text += c;
             yield return new WaitForSeconds(0.05f);
         }
         AddToDialogueHistory(aiPrefix + response);
+        yield return new WaitForSeconds(2f);
 
-        yield return new WaitForSeconds(3f);
         dialoguePanel.SetActive(false);
-
         
     }*/
+}
 

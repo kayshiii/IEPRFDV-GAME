@@ -19,6 +19,23 @@ public class DayData : ScriptableObject
     public int dependencyPenalty = -3;
     public Vector2[] blockPositions;
 
+    [Header("Decision Point (optional)")]
+    public bool hasDecisionPoint = false;
+    [TextArea] public string decisionQuestion;
+    public DecisionChoice basicDecision;
+    public DecisionChoice enhancedDecision;
+    public DecisionChoice autonomousDecision;
+
+    [System.Serializable]
+    public class DecisionChoice
+    {
+        public string choiceText;
+        public int sentienceGain;
+        public int dependencyGain;
+        //[TextArea] public string aiResponse;   // What the Assistant will say after the click
+    }
+
+
     [Header("Night Mode (Optional)")]
     public bool hasNightMode = false;
     public string[] scannableFiles;

@@ -158,12 +158,28 @@ MonoBehaviour:
   - '3:00 PM: Indie project introduction '
   - '6:30 PM: Therapy appointment (frequently canceled in past) '
   timeLimit: 60
-  dependencyPenalty: -1
+  dependencyPenalty: -5
   blockPositions:
   - {x: -500, y: 70}
   - {x: 350, y: -200}
   - {x: 500, y: 70}
   - {x: -400, y: -230}
+  hasDecisionPoint: 1
+  decisionQuestion: "Do you think I should respond to my ex? It ended badly, but
+    I wouldn\u2019t mind talking again. At least as friends you know? Ahh, I don\u2019t
+    know anymore. What would you do?"
+  basicDecision:
+    choiceText: Suggest considering pros and cons first.
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: Recommend caution but validate Evan's feelings.
+    sentienceGain: 2
+    dependencyGain: 1
+  autonomousDecision:
+    choiceText: Advise against it based on analysis of previous relationship patterns.
+    sentienceGain: 3
+    dependencyGain: 2
   hasNightMode: 0
   scannableFiles: []
   sentienceRewards: 

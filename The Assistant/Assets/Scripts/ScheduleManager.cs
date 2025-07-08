@@ -381,9 +381,9 @@ public class ScheduleManager : MonoBehaviour
         gameManager.shutdownButton.GetComponent<Image>().color = Color.white;
 
         // Check if this is Day 4 and trigger decision point
-        if (gameManager.currentDay == 4)
+        if (gameManager.currentDay == 4 || gameManager.currentDay == 5)
         {
-            gameManager.StartDecisionPointDialogue();
+            gameManager.TriggerDecisionPoint();
         }
         else
         {
