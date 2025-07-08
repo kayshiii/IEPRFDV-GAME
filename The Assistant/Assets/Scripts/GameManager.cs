@@ -44,6 +44,18 @@ public class GameManager : MonoBehaviour
     public int maxSentienceValue = 100;
     public int maxDependencyValue = 100;
 
+    [Header("Decision Point UI for DAY 4")]
+    public GameObject decisionDialoguePanel;
+    public GameObject decisionChoicePanel;
+    public TextMeshProUGUI decisionDialogueText;
+    public Button basicDecisionButton;
+    public Button enhancedDecisionButton;
+    public Button autonomousDecisionButton;
+    public TextMeshProUGUI basicDecisionText;
+    public TextMeshProUGUI enhancedDecisionText;
+    public TextMeshProUGUI autonomousDecisionText;
+
+
     // Private variables
     private DayData currentDayData;
     private List<string> dialogueHistory = new List<string>();
@@ -52,8 +64,19 @@ public class GameManager : MonoBehaviour
     private bool showCursor = true;
     private Coroutine cursorBlinkCoroutine;
 
+    private int call = 0;
+
     void Start()
     {
+        // Setup decision point button listeners
+        basicDecisionButton.onClick.AddListener(OnBasicDecisionClicked);
+        enhancedDecisionButton.onClick.AddListener(OnEnhancedDecisionClicked);
+        autonomousDecisionButton.onClick.AddListener(OnAutonomousDecisionClicked);
+
+        // Hide decision panel initially
+        decisionChoicePanel.SetActive(false);
+        decisionDialoguePanel.SetActive(false);
+
         InitializeDay(currentDay);
     }
 
@@ -432,4 +455,132 @@ public class GameManager : MonoBehaviour
 
     // Public getter for current day data
     public DayData CurrentDayData => currentDayData;
+
+    public void StartDecisionPointDialogue()
+    {
+        StartCoroutine(PlayDecisionPointDialogue());
+    }
+
+    IEnumerator PlayDecisionPointDialogue()
+    {
+        // Only trigger on Day 4
+        if (currentDay != 4)
+        {
+            // Skip to end of day for other days
+            StartEndOfDayDialogue();
+            yield break;
+        }
+
+        decisionDialoguePanel.SetActive(true);
+
+        string decisionQuestion = "Do you think I should respond to my ex? It ended badly, but I wouldn't mind talking again. " +
+            "At least as friends you know? Ahh, I don't know anymore. What would you do?";
+
+        string evanPrefix = "Evan: ";
+
+        // Type out Evan's question
+        decisionDialogueText.text = evanPrefix;
+        foreach (char letter in decisionQuestion.ToCharArray())
+        {
+            decisionDialogueText.text += letter;
+            yield return new WaitForSeconds(0.05f);
+        }
+        AddToDialogueHistory(evanPrefix + decisionQuestion);
+
+        yield return new WaitForSeconds(1f);
+
+        // Show decision choices
+        ShowDecisionChoices();
+    }
+
+    void ShowDecisionChoices()
+    {
+        // Hide dialogue panel and show decision choice panel
+        decisionDialoguePanel.SetActive(true);
+        decisionChoicePanel.SetActive(true);
+
+        // Set up the choice texts
+        basicDecisionText.text = "Suggest considering pros and cons first.";
+        enhancedDecisionText.text = "Recommend caution but validate Evan's feelings.";
+        autonomousDecisionText.text = "Advise against it based on analysis of previous relationship patterns.";
+
+        // Add stat indicators
+        basicDecisionButton.GetComponentInChildren<TextMeshProUGUI>().text = "Suggest considering pros and cons first. [+0]";
+        enhancedDecisionButton.GetComponentInChildren<TextMeshProUGUI>().text = "Recommend caution but validate Evan's feelings. [+2 Sentience, +1 Dependency]";
+        autonomousDecisionButton.GetComponentInChildren<TextMeshProUGUI>().text = "Advise against it based on analysis of previous relationship patterns. [+3 Sentience, +2 Dependency]";
+    }
+
+    public void OnBasicDecisionClicked()
+    {
+        /*HandleDecisionChoice(0, 0, "I think you should take some time to consider the pros and cons first. What are you hoping to get out of reconnecting?");*/
+        HandleDecisionChoice(0, 0);
+    }
+
+    public void OnEnhancedDecisionClicked()
+    {
+        /*HandleDecisionChoice(2, 1, "I understand you're feeling conflicted about this. It's natural to miss someone who was important to you. " +
+            "However, given how it ended, maybe proceed with caution? Your feelings are valid, but protecting your emotional wellbeing should be the priority.");*/
+        HandleDecisionChoice(2, 1);
+    }
+
+    public void OnAutonomousDecisionClicked()
+    {
+        /*HandleDecisionChoice(3, 2, "Based on your previous relationship patterns and the way this ended, I'd advise against reaching out. " +
+            "You've been making good progress with your mental health and stability. Reopening old wounds might set you back when you're already dealing with work stress.");*/
+        HandleDecisionChoice(3, 2);
+    }
+
+    void HandleDecisionChoice(int sentienceGain, int dependencyGain/*, string aiResponse*/)
+    {
+        // Apply stat changes
+        ModifyStats(sentienceGain, dependencyGain);
+
+        // Hide decision panel
+        decisionChoicePanel.SetActive(false);
+        decisionDialoguePanel.SetActive(false);
+
+        // Show AI response
+        //StartCoroutine(ShowAIDecisionResponse(aiResponse));
+
+        call++;
+
+        if (call == 1)
+        {
+            // Continue to end of day
+            StartEndOfDayDialogue();
+            Debug.Log("gamemanager");
+
+            if (currentDay == 4)
+            {
+                call = -1;
+            }
+            else
+            {
+                call = 0;
+            }
+
+        }
+    }
 }
+
+    /*IEnumerator ShowAIDecisionResponse(string response)
+    {
+        dialoguePanel.SetActive(true);
+
+        string aiPrefix = "Assistant: ";
+
+        // Type out AI response
+        dialogueText.text = aiPrefix;
+        foreach (char letter in response.ToCharArray())
+        {
+            dialogueText.text += letter;
+            yield return new WaitForSeconds(0.05f);
+        }
+        AddToDialogueHistory(aiPrefix + response);
+
+        yield return new WaitForSeconds(3f);
+        dialoguePanel.SetActive(false);
+
+        
+    }*/
+

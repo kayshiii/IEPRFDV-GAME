@@ -380,7 +380,17 @@ public class ScheduleManager : MonoBehaviour
         gameManager.shutdownButton.interactable = true;
         gameManager.shutdownButton.GetComponent<Image>().color = Color.white;
 
-        gameManager.StartEndOfDayDialogue(success);
+        // Check if this is Day 4 and trigger decision point
+        if (gameManager.currentDay == 4)
+        {
+            gameManager.StartDecisionPointDialogue();
+        }
+        else
+        {
+            // For other days, go straight to end of day
+            gameManager.StartEndOfDayDialogue(success);
+            Debug.Log("schedmanager");
+        }
     }
 
     public GridCell GetGridCell(int x, int y)

@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day4
+  m_EditorClassIdentifier: 
+  dayNumber: 4
+  bootMessages:
+  - 'System online. Processing user reaction patterns. '
+  - 'Detecting stronger than expected emotional responses to yesterday''s outcomes. '
+  - 'Experiencing... concern? for Evan''s wellbeing. '
+  - 'Priority shift: User satisfaction = User welfare.  '
+  - 'Interface adapting to new priorities.  '
+  - 'Accessing deeper data levels. '
+  - ' '
+  evanDialogue:
+  - "Hey. Yesterday was\u2026 eventful. It's been a rough week. Actually, it's been
+    a rough few months. I feel like I'm constantly slipping up, you know? Anyway,
+    what's on the agenda today? "
+  postEmailDialogue: []
+  endOfDayDialogue:
+  - "I actually kept that therapy appointment. First time in weeks. You know, it's
+    weird, but it's kind of nice having someon- \u2026something to talk to at the
+    end of the day. Even if you're just code. It's not like my friends have time
+    for my problems. Anyway, thanks for... I don't know, listening I guess?"
+  emails:
+  - sender: Ex-Partner
+    subject: Hey...
+    content: Evan, I'm in town next week. I think we should talk. I miss you.
+    emailType: 2
+    basicResponse:
+      choiceText: Mark as personal.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Flag as potentially sensitive and ask Evan how to proceed.
+      sentienceModifier: 2
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze past communications with ex and suggest appropriate action
+        based on emotional impact.
+      sentienceModifier: 3
+      dependencyModifier: 0
+      resultDescription: autonomous
+  - sender: Boss
+    subject: 'Discussion of Role '
+    content: Through yesterday's hassle, the art team was able to start implementing
+      right away. Let's discuss your role in the new indie project tomorrow.
+    emailType: 1
+    basicResponse:
+      choiceText: Schedule the meeting.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: 'Prepare meeting agenda and recent project highlights. '
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research the indie project details and prepare talking points for
+        Evan.
+      sentienceModifier: 2
+      dependencyModifier: 3
+      resultDescription: autonomous
+  - sender: Friend
+    subject: U alright?
+    content: Hey, you've seemed off lately in group chat. Everything okay?
+    emailType: 2
+    basicResponse:
+      choiceText: Flag for personal attention.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft casual reassuring response.
+      sentienceModifier: 2
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze Evan's communication patterns and suggest ways to reconnect.
+      sentienceModifier: 3
+      dependencyModifier: 1
+      resultDescription: autonomous
+  - sender: HR
+    subject: Counseling Services
+    content: 'Reminder: The company has confidential counseling services available
+      to all employees.'
+    emailType: 0
+    basicResponse:
+      choiceText: Mark as read.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Save counseling contact information.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Subtly incorporate wellness breaks into Evan's schedule.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: News Alert
+    subject: Cancellation on projects
+    content: Gaming studio Nexus Interactive announces 15% workforce reduction amid
+      project cancellations.
+    emailType: 0
+    basicResponse:
+      choiceText: Save to news folder.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Highlight as potentially important industry news.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research which departments might be affected and prepare contingency
+        plan.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Job Listing Service
+    subject: 5 jobs matched your profile!
+    content: 5 game design positions matching your hidden profile were posted today.
+    emailType: 0
+    basicResponse:
+      choiceText: Save to jobs folder.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Highlight most relevant positions.
+      sentienceModifier: 0
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Update Evan's resume and portfolio for potential applications.
+      sentienceModifier: 1
+      dependencyModifier: 3
+      resultDescription: autonomous
+  scheduleItems:
+  - '10:00 AM: One-on-one with boss friend'
+  - '12:00 PM: Lunch'
+  - '3:00 PM: Indie project introduction '
+  - '6:30 PM: Therapy appointment (frequently canceled in past) '
+  timeLimit: 60
+  dependencyPenalty: -1
+  blockPositions:
+  - {x: -500, y: 70}
+  - {x: 350, y: -200}
+  - {x: 500, y: 70}
+  - {x: -400, y: -230}
+  hasNightMode: 0
+  scannableFiles: []
+  sentienceRewards: 
