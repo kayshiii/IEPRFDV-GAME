@@ -70,11 +70,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        /*// Setup decision point button listeners
-        basicDecisionButton.onClick.AddListener(OnBasicDecisionClicked);
-        enhancedDecisionButton.onClick.AddListener(OnEnhancedDecisionClicked);
-        autonomousDecisionButton.onClick.AddListener(OnAutonomousDecisionClicked);
-
+        /*
         // Hide decision panel initially
         decisionChoicePanel.SetActive(false);
         decisionDialoguePanel.SetActive(false);*/
@@ -380,9 +376,20 @@ public class GameManager : MonoBehaviour
 
     IEnumerator PlayPostEmailDialogue()
     {
+        // Only Day 1 has post-email dialogue
+        if (currentDay != 1)
+        {
+            // Skip post-email dialogue for other days
+            yield break;
+        }
+
         dialoguePanel.SetActive(true);
 
-        string[] postEmailMessages = currentDayData.postEmailDialogue;
+        // Hardcoded Day 1 post-email message
+        string[] postEmailMessages = {
+        "Wow that was quick. And efficient too. Alright now help me with my schedule for today. I don't wanna get burnt out too early you know?"
+    };
+
         string evanPrefix = "Evan: ";
 
         foreach (string message in postEmailMessages)

@@ -370,7 +370,13 @@ public class EmailManager : MonoBehaviour
     {
         gameManager.scheduleIcon.interactable = true;
         gameManager.scheduleIcon.GetComponent<Image>().color = Color.white;
-        gameManager.StartPostEmailDialogue();
+
+        if (gameManager.currentDay == 1)
+        {
+            gameManager.StartPostEmailDialogue();
+            Debug.Log("All emails processed! Schedule interaction now available.");
+        }
+        else
         Debug.Log("All emails processed! Schedule interaction now available.");
     }
 

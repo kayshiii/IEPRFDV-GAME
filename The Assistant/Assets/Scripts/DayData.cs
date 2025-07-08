@@ -7,7 +7,6 @@ public class DayData : ScriptableObject
     public int dayNumber;
     public string[] bootMessages;
     public string[] evanDialogue;
-    public string[] postEmailDialogue;
     public string[] endOfDayDialogue;
 
     [Header("Email Configuration")]
