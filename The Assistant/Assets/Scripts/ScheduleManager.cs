@@ -9,13 +9,20 @@ public class ScheduleManager : MonoBehaviour
     [Header("Schedule UI References")]
     public GameObject schedulePanel;
     public GameObject schedulePanelProper;
+    public GameObject instructionPanel; // New instruction panel
     public Transform gridContainer;
     public RectTransform gridVisualAsset;
     public GameObject interactiveCellPrefab;
     public Transform blockContainer;
     public Button completeScheduleButton;
+    public Button beginGameButton; // New begin button
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI instructionText;
+
+    [Header("Instruction Screen")]
+    //public TextMeshProUGUI instructionTitleText;
+    public TextMeshProUGUI instructionContentText;
+    public TextMeshProUGUI dayInfoText; // Shows current day and time limit
 
     [Header("Grid Settings")]
     public int gridWidth = 4;
@@ -43,6 +50,7 @@ public class ScheduleManager : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         schedulePanel.SetActive(false);
         completeScheduleButton.onClick.AddListener(CompleteSchedule);
+        beginGameButton.onClick.AddListener(BeginScheduleGame); // New button listener
     }
 
     public void ResetForNewDay()
@@ -65,16 +73,68 @@ public class ScheduleManager : MonoBehaviour
         }
 
         schedulePanel.SetActive(true);
+        ShowInstructionScreen(); // Show instructions first
+    }
+
+    void ShowInstructionScreen()
+    {
+        // Hide other panels and show instruction panel
+        schedulePanelProper.SetActive(false);
+        completionMessagePanel.SetActive(false);
+        instructionPanel.SetActive(true);
+
+        // Set up instruction content
+        SetupInstructionContent();
+    }
+
+    void SetupInstructionContent()
+    {
+        // Set title
+        //instructionTitleText.text = "Schedule Organization";
+
+        // Set day info with time limit
+        dayInfoText.text = $"Day {gameManager.currentDay} - Time Limit: {currentDayData.timeLimit} seconds";
+
+        // Set instruction content
+        string instructions = "HOW TO PLAY:\n\n" +
+                            "• Drag the schedule blocks from the sides\n" +
+                            "• Drop them into the grid to organize your day\n" +
+                            "• All blocks must fit within the grid boundaries\n" +
+                            "• Blocks cannot overlap with each other\n" +
+                            "• Complete the puzzle before time runs out\n\n" +
+                            "SCHEDULE ITEMS:\n";
+
+        // Add current day's schedule items to instructions
+        string[] scheduleItems = currentDayData.scheduleItems;
+        for (int i = 0; i < scheduleItems.Length; i++)
+        {
+            instructions += $"• {scheduleItems[i]}\n";
+        }
+
+        instructions += "\nPress BEGIN when you're ready to start!";
+
+        instructionContentText.text = instructions;
+    }
+
+    public void BeginScheduleGame()
+    {
+        // Hide instruction panel and show game panel
+        instructionPanel.SetActive(false);
         schedulePanelProper.SetActive(true);
+
+        // Prepare the game components
         SetupGridWithAsset();
         SpawnScheduleBlocks();
         PositionBlocksManually();
+
+        // Start the actual game
         StartScheduleGame();
     }
 
     void ShowCompletionMessage()
     {
         schedulePanelProper.SetActive(false);
+        instructionPanel.SetActive(false);
         completionMessagePanel.SetActive(true);
 
         if (hasCompletedSchedule)
@@ -146,7 +206,6 @@ public class ScheduleManager : MonoBehaviour
         }
         scheduleBlocks.Clear();
 
-        // Use current day's schedule items
         string[] scheduleItems = currentDayData.scheduleItems;
 
         for (int i = 0; i < scheduleItems.Length; i++)
@@ -175,7 +234,6 @@ public class ScheduleManager : MonoBehaviour
 
     void StartScheduleGame()
     {
-        // Use current day's time limit and penalty
         currentTime = currentDayData.timeLimit;
 
         isGameActive = true;
@@ -294,7 +352,7 @@ public class ScheduleManager : MonoBehaviour
 
             instructionText.text = "Schedule completed successfully!";
             gameManager.scheduleIcon.interactable = true;
-            StartCoroutine(CompleteScheduleSequence());
+            StartCoroutine(CompleteScheduleSequence(true));
         }
     }
 
@@ -308,12 +366,11 @@ public class ScheduleManager : MonoBehaviour
         instructionText.text = "Time's up! Schedule organization failed.";
         timerText.text = "FAILED";
 
-        // Apply dependency penalty from current day data
         gameManager.ModifyStats(0, currentDayData.dependencyPenalty);
-        StartCoroutine(CompleteScheduleSequence());
+        StartCoroutine(CompleteScheduleSequence(false));
     }
 
-    IEnumerator CompleteScheduleSequence()
+    IEnumerator CompleteScheduleSequence(bool success)
     {
         yield return new WaitForSeconds(2f);
 
@@ -322,7 +379,8 @@ public class ScheduleManager : MonoBehaviour
 
         gameManager.shutdownButton.interactable = true;
         gameManager.shutdownButton.GetComponent<Image>().color = Color.white;
-        gameManager.StartEndOfDayDialogue();
+
+        gameManager.StartEndOfDayDialogue(success);
     }
 
     public GridCell GetGridCell(int x, int y)

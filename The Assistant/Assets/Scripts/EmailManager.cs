@@ -303,7 +303,7 @@ public class EmailManager : MonoBehaviour
         spamFilterButton.GetComponent<Image>().color = Color.white;
         allFilterButton.GetComponent<Image>().color = Color.white;
 
-        // Highlight active filter
+        /*// Highlight active filter
         if (showAllEmails)
         {
             allFilterButton.GetComponent<Image>().color = Color.yellow;
@@ -325,7 +325,7 @@ public class EmailManager : MonoBehaviour
                     spamFilterButton.GetComponent<Image>().color = Color.yellow;
                     break;
             }
-        }
+        }*/
     }
 
     void UpdateFilterText()
