@@ -373,16 +373,45 @@ public class GameManager : MonoBehaviour
         dialoguePanel.SetActive(false);
     }
 
-    public void StartEndOfDayDialogue()
+    public void StartEndOfDayDialogue(bool scheduleSuccess = true)
     {
-        StartCoroutine(PlayEndOfDayDialogue());
+        StartCoroutine(PlayEndOfDayDialogue(scheduleSuccess));
     }
 
-    IEnumerator PlayEndOfDayDialogue()
+    IEnumerator PlayEndOfDayDialogue(bool scheduleSuccess = true)
     {
         dialoguePanel.SetActive(true);
 
-        string[] endMessages = currentDayData.endOfDayDialogue;
+        string[] endMessages;
+
+        // Special handling for Day 3's conditional messages
+        if (currentDay == 3)
+        {
+            if (scheduleSuccess)
+            {
+                endMessages = new string[] {
+                "I don't even want to think about what would have happened if we'd missed that deadline change. " +
+                "That was... I mean, you shouldn't have even caught that in the spam folder. " +
+                "The milestone review would have been a disaster. I'm actually impressed. Really impressed. " +
+                "Thanks for saving me today."
+                };
+            }
+            else
+            {
+                endMessages = new string[] {
+                "Complete disaster today. Boss is furious. The programming team is blocked and the milestone review is at risk. " +
+                "All because I missed some email about a deadline change? How did that happen? " +
+                "I thought you were supposed to PREVENT these kinds of screw-ups! " +
+                "I can't afford mistakes like this in game development."
+                };
+            }
+        }
+        else
+        {
+            // Use default end-of-day dialogue for other days
+            endMessages = currentDayData.endOfDayDialogue;
+        }
+
         string evanPrefix = "Evan: ";
 
         foreach (string message in endMessages)

@@ -7,6 +7,7 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 {
     [Header("Block Settings")]
     public string scheduleText;
+    public string BlockName;
     public bool IsPlaced { get; private set; }
 
     [Header("Visual Components")]
@@ -71,7 +72,7 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     void SetupBlockShape()
     {
-        // Define different shapes for different schedule blocks
+        /*// Define different shapes for different schedule blocks
         if (scheduleText.Contains("Team meeting") || scheduleText.Contains("Department meeting"))
         {
             blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false } }; // inverted L (2x4) -- good
@@ -87,6 +88,23 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         else if (scheduleText.Contains("Phoenix") || scheduleText.Contains("Call with lead programmer (important)"))
         {
             blockShape = new bool[,] { { false, true }, { true, true }, { true, true }, { false, true } }; // (2x4) -- good
+        }*/
+
+        if (BlockName.Contains("1a"))
+        {
+            blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false } };
+        }
+        else if (BlockName.Contains("1b"))
+        {
+            blockShape = new bool[,] { { true, true }, { true, true } };
+        }
+        else if (BlockName.Contains("1c"))
+        {
+            blockShape = new bool[,] { { true, false, false, false }, { true, true, true, true } };
+        }
+        else if (BlockName.Contains("1d"))
+        {
+            blockShape = new bool[,] { { false, true }, { true, true }, { true, true }, { false, true } };
         }
     }
 

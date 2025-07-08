@@ -319,10 +319,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scheduleText: Dentist
+  BlockName: 1c
   blockText: {fileID: 6230780571796185303}
   blockImage: {fileID: 1790118801979687987}
   canvasGroup: {fileID: 3409840036373292782}
-  ID: 2
 --- !u!1 &5399949883877331589
 GameObject:
   m_ObjectHideFlags: 0

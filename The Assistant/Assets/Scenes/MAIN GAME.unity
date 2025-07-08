@@ -7540,6 +7540,7 @@ MonoBehaviour:
   dayDataArray:
   - {fileID: 11400000, guid: d60e22187b26ba54483ed4cbca7c03aa, type: 2}
   - {fileID: 11400000, guid: c612e71419a564143ac17ed64b274f5d, type: 2}
+  - {fileID: 11400000, guid: b382f8a8af24cde47af150be36c19455, type: 2}
   bootSequencePanel: {fileID: 1666281847}
   desktopPanel: {fileID: 1510400759}
   dialoguePanel: {fileID: 324745036}

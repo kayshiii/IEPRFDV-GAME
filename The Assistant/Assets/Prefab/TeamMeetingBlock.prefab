@@ -394,10 +394,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scheduleText: Team meeting
+  BlockName: 1a
   blockText: {fileID: 2495609932153564837}
   blockImage: {fileID: 7279062891666314539}
   canvasGroup: {fileID: 7070396429686025139}
-  ID: 0
 --- !u!1 &5309842834618114019
 GameObject:
   m_ObjectHideFlags: 0

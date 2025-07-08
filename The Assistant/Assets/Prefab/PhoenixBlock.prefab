@@ -259,10 +259,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scheduleText: CharDes
+  BlockName: 1d
   blockText: {fileID: 7619374317096476036}
   blockImage: {fileID: 8972937791067948332}
   canvasGroup: {fileID: 2506039884323712640}
-  ID: 3
 --- !u!1 &3566840708899935138
 GameObject:
   m_ObjectHideFlags: 0
