@@ -34,7 +34,6 @@ public class DayData : ScriptableObject
         //[TextArea] public string aiResponse;   // What the Assistant will say after the click
     }
 
-
     [Header("Night Mode (Optional)")]
     public bool hasNightMode = false;
     public string[] scannableFiles;

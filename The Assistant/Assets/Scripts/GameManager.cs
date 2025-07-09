@@ -355,7 +355,7 @@ public class GameManager : MonoBehaviour
         AddToDialogueHistory("System: Update scheduled. Functionality may be limited today.");
     }
 
-    // ----- DAY 6 SYSTEM UPDATE NOTIFICATION ----- //
+    // ----- SHUTDOWN ----- //
 
     public void OnShutdownClicked()
     {
@@ -683,6 +683,7 @@ public class GameManager : MonoBehaviour
         {
             // Use default end-of-day dialogue for other days
             endMessages = currentDayData.endOfDayDialogue;
+            Debug.Log("gamemanager end of day");
         }
 
         string evanPrefix = "Evan: ";
@@ -774,11 +775,12 @@ public class GameManager : MonoBehaviour
 
     void HandleDay6BasicChoice(DayData.DecisionChoice choice)
     {
-        StartEndOfDayDialogue();
+        
 
         // Check if sentience is low enough to trigger secret ending
         if (sentience < 10)
         {
+            StartEndOfDayDialogue();
             // Trigger secret ending
             TriggerSecretEnding();
             return;
