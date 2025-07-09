@@ -91,7 +91,7 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             blockShape = new bool[,] { { false, true }, { true, true }, { true, true }, { false, true } }; // (2x4) -- good
         }*/
-
+        // --- DAY 1 ---
         if (BlockName.Contains("1a"))
         {
             blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false } };
@@ -107,6 +107,27 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         else if (BlockName.Contains("1d"))
         {
             blockShape = new bool[,] { { false, true }, { true, true }, { true, true }, { false, true } };
+        }
+        // --- DAY 2 ---
+        else if (BlockName.Contains("2a"))
+        {
+            blockShape = new bool[,] { { false, false, false, true }, { true, true, true, true }, };
+        }
+        else if (BlockName.Contains("2b"))
+        {
+            blockShape = new bool[,] { { false, true, false }, { false, true, false }, { true, true, true } };
+        }
+        else if (BlockName.Contains("2c"))
+        {
+            blockShape = new bool[,] { { true, true, true, true } };
+        }
+        else if (BlockName.Contains("2d"))
+        {
+            blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false }, { true, true, true, true } };
+        } 
+        else if (BlockName.Contains("2e"))
+        {
+            blockShape = new bool[,] { { true, true, true }, { false, false, true }, { false, false, true } };
         }
     }
 
@@ -153,8 +174,8 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // Calculate grid position based on your grid asset
         RectTransform gridAsset = scheduleManager.gridVisualAsset;
-        float cellWidth = gridAsset.rect.width / scheduleManager.gridWidth;
-        float cellHeight = gridAsset.rect.height / scheduleManager.gridHeight;
+        float cellWidth = gridAsset.rect.width / scheduleManager.currentGridWidth;
+        float cellHeight = gridAsset.rect.height / scheduleManager.currentGridHeight;
 
         Vector2 gridPos = gridAsset.anchoredPosition;
         float startX = gridPos.x - (gridAsset.rect.width / 2f);
@@ -185,8 +206,8 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             out localPoint);
 
         RectTransform gridAsset = scheduleManager.gridVisualAsset;
-        float cellWidth = gridAsset.rect.width / scheduleManager.gridWidth;
-        float cellHeight = gridAsset.rect.height / scheduleManager.gridHeight;
+        float cellWidth = gridAsset.rect.width / scheduleManager.currentGridWidth;
+        float cellHeight = gridAsset.rect.height / scheduleManager.currentGridHeight;
 
         Vector2 gridPos = gridAsset.anchoredPosition;
         float startX = gridPos.x - (gridAsset.rect.width / 2f);
@@ -223,8 +244,8 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             int shapeHeight = shape.GetLength(1);
 
             // Calculate the visual center of the highlighted area
-            float cellWidth = scheduleManager.gridVisualAsset.rect.width / scheduleManager.gridWidth;
-            float cellHeight = scheduleManager.gridVisualAsset.rect.height / scheduleManager.gridHeight;
+            float cellWidth = scheduleManager.gridVisualAsset.rect.width / scheduleManager.currentGridWidth;
+            float cellHeight = scheduleManager.gridVisualAsset.rect.height / scheduleManager.currentGridHeight;
 
             // Offset to center the block across its occupied cells (matching visual feedback)
             float offsetX = (shapeWidth - 1) * cellWidth / 2f;

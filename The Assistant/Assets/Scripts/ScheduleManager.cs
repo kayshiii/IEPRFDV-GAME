@@ -24,12 +24,31 @@ public class ScheduleManager : MonoBehaviour
     public TextMeshProUGUI failedInfoText;
     public TextMeshProUGUI timeLimitInfoText; // Shows current day and time limit
 
-    [Header("Grid Settings")]
-    public int gridWidth = 4;
-    public int gridHeight = 5;
+    [Header("Day-Specific Grid Configurations")]
+    public GameObject[] gridVisualAssets; // Different grid visuals for each day (9 elements)
+    public int[] gridWidths = new int[9];     // Width for each day
+    public int[] gridHeights = new int[9];    // Height for each day
 
-    [Header("Block Prefabs")]
-    public GameObject[] blockPrefabs;
+    // Remove the old: public int gridWidth = 4; public int gridHeight = 5;
+    public int currentGridWidth;
+    public int currentGridHeight;
+    private RectTransform currentGridVisualAsset;
+
+
+    [Header("Day-Specific Block Prefabs")]
+    public GameObject[] day1BlockPrefabs; // 4 blocks for Day 1
+    public GameObject[] day2BlockPrefabs; // 5 blocks for Day 2
+    public GameObject[] day3BlockPrefabs; // 4 blocks for Day 3
+    public GameObject[] day4BlockPrefabs; // 4 blocks for Day 4
+    public GameObject[] day5BlockPrefabs; // 6 blocks for Day 5
+    public GameObject[] day6BlockPrefabs; // 4 blocks for Day 6
+    public GameObject[] day7BlockPrefabs; // 7 blocks for Day 7
+    public GameObject[] day8BlockPrefabs; // Variable based on path
+    public GameObject[] day9BlockPrefabs; // Final day blocks
+
+    // Remove the old: public GameObject[] blockPrefabs;
+    private GameObject[] currentBlockPrefabs;
+
 
     [Header("Completion State")]
     private bool hasCompletedSchedule = false;
@@ -44,6 +63,41 @@ public class ScheduleManager : MonoBehaviour
     private bool scheduleAttempted = false;
     private GameManager gameManager;
     private DayData currentDayData;
+
+    void SelectGridConfigurationForCurrentDay()
+    {
+        int currentDay = gameManager.currentDay;
+        int dayIndex = currentDay - 1; // Convert to 0-based index
+
+        // Validate day index
+        if (dayIndex >= 0 && dayIndex < gridWidths.Length &&
+            dayIndex < gridHeights.Length && dayIndex < gridVisualAssets.Length)
+        {
+            currentGridWidth = gridWidths[dayIndex];
+            currentGridHeight = gridHeights[dayIndex];
+            currentGridVisualAsset = gridVisualAssets[dayIndex].GetComponent<RectTransform>();
+
+            Debug.Log($"Selected grid for Day {currentDay}: {currentGridWidth}x{currentGridHeight}");
+        }
+        else
+        {
+            // Fallback to default values
+            currentGridWidth = 4;
+            currentGridHeight = 5;
+            //currentGridVisualAsset = gridVisualAssets[0]; // Use first grid as fallback
+
+            Debug.LogWarning($"No grid configuration found for Day {currentDay}, using default 4x5");
+        }
+
+        if (gameManager.currentDay == 1)
+        {
+            gridVisualAssets[0].SetActive(true);
+        }
+        else if (gameManager.currentDay == 2)
+        {
+            gridVisualAssets[1].SetActive(true);
+        }
+    }
 
     void Start()
     {
@@ -98,6 +152,49 @@ public class ScheduleManager : MonoBehaviour
         failedInfoText.text = $"FAILED: <color=#F70000>{currentDayData.dependencyPenalty} DEPENDENCY</color>";
     }
 
+    void SelectBlockPrefabsForCurrentDay()
+    {
+        int currentDay = gameManager.currentDay;
+
+        switch (currentDay)
+        {
+            case 1:
+                currentBlockPrefabs = day1BlockPrefabs;
+                break;
+            case 2:
+                currentBlockPrefabs = day2BlockPrefabs;
+                break;
+            case 3:
+                currentBlockPrefabs = day3BlockPrefabs;
+                break;
+            case 4:
+                currentBlockPrefabs = day4BlockPrefabs;
+                break;
+            case 5:
+                currentBlockPrefabs = day5BlockPrefabs;
+                break;
+            case 6:
+                currentBlockPrefabs = day6BlockPrefabs;
+                break;
+            case 7:
+                currentBlockPrefabs = day7BlockPrefabs;
+                break;
+            case 8:
+                currentBlockPrefabs = day8BlockPrefabs;
+                break;
+            case 9:
+                currentBlockPrefabs = day9BlockPrefabs;
+                break;
+            default:
+                currentBlockPrefabs = day1BlockPrefabs; // Fallback
+                Debug.LogWarning($"No block prefabs defined for day {currentDay}, using Day 1 prefabs");
+                break;
+        }
+
+        Debug.Log($"Selected {currentBlockPrefabs.Length} block prefabs for Day {currentDay}");
+    }
+
+
     public void BeginScheduleGame()
     {
         // Hide instruction panel and show game panel
@@ -140,6 +237,9 @@ public class ScheduleManager : MonoBehaviour
 
     void SetupGridWithAsset()
     {
+        // Select grid configuration for current day
+        SelectGridConfigurationForCurrentDay();
+
         // Clear any existing interactive cells
         foreach (Transform child in gridContainer)
         {
@@ -147,24 +247,34 @@ public class ScheduleManager : MonoBehaviour
                 Destroy(child.gameObject);
         }
 
-        grid = new GridCell[gridWidth, gridHeight];
+        // Initialize grid array with current day's dimensions
+        grid = new GridCell[currentGridWidth, currentGridHeight];
 
-        float gridWidth_pixels = gridVisualAsset.rect.width;
-        float gridHeight_pixels = gridVisualAsset.rect.height;
-        float cellWidth = gridWidth_pixels / gridWidth;
-        float cellHeight = gridHeight_pixels / gridHeight;
+        // Get dimensions from current day's grid asset
+        float gridWidth_pixels = currentGridVisualAsset.rect.width;
+        float gridHeight_pixels = currentGridVisualAsset.rect.height;
 
-        Vector2 gridPosition = gridVisualAsset.anchoredPosition;
+        // Calculate individual cell dimensions
+        float cellWidth = gridWidth_pixels / currentGridWidth;
+        float cellHeight = gridHeight_pixels / currentGridHeight;
+
+        // Get the grid asset's position as reference point
+        Vector2 gridPosition = currentGridVisualAsset.anchoredPosition;
+
+        // Calculate starting position (top-left corner of first cell)
         float startX = gridPosition.x - (gridWidth_pixels / 2f) + (cellWidth / 2f);
         float startY = gridPosition.y + (gridHeight_pixels / 2f) - (cellHeight / 2f);
 
-        for (int row = 0; row < gridHeight; row++)
+        // Create interactive cells for each grid position
+        for (int row = 0; row < currentGridHeight; row++)
         {
-            for (int col = 0; col < gridWidth; col++)
+            for (int col = 0; col < currentGridWidth; col++)
             {
+                // Create interactive cell
                 GameObject cellObj = Instantiate(interactiveCellPrefab, gridContainer);
                 cellObj.name = $"InteractiveCell_{col}_{row}";
 
+                // Position the cell
                 RectTransform cellRect = cellObj.GetComponent<RectTransform>();
                 cellRect.sizeDelta = new Vector2(cellWidth, cellHeight);
 
@@ -172,12 +282,14 @@ public class ScheduleManager : MonoBehaviour
                 float posY = startY - (row * cellHeight);
                 cellRect.anchoredPosition = new Vector2(posX, posY);
 
+                // Initialize the GridCell component
                 GridCell gridCell = cellObj.GetComponent<GridCell>();
                 gridCell.Initialize(col, row);
                 grid[col, row] = gridCell;
             }
         }
     }
+
 
     void SpawnScheduleBlocks()
     {
@@ -188,11 +300,19 @@ public class ScheduleManager : MonoBehaviour
         }
         scheduleBlocks.Clear();
 
+        // Select appropriate prefabs for current day
+        SelectBlockPrefabsForCurrentDay();
+
+        // Get current day's schedule items
         string[] scheduleItems = currentDayData.scheduleItems;
 
-        for (int i = 0; i < scheduleItems.Length; i++)
+        // Ensure we have enough prefabs for the schedule items
+        int itemCount = Mathf.Min(scheduleItems.Length, currentBlockPrefabs.Length);
+
+        // Spawn blocks using day-specific prefabs
+        for (int i = 0; i < itemCount; i++)
         {
-            GameObject blockObj = Instantiate(blockPrefabs[i], blockContainer);
+            GameObject blockObj = Instantiate(currentBlockPrefabs[i], blockContainer);
             ScheduleBlock block = blockObj.GetComponent<ScheduleBlock>();
 
             if (block == null)
@@ -201,7 +321,27 @@ public class ScheduleManager : MonoBehaviour
             block.Initialize(scheduleItems[i], this);
             scheduleBlocks.Add(block);
         }
+
+        // Handle case where we have more schedule items than prefabs
+        if (scheduleItems.Length > currentBlockPrefabs.Length)
+        {
+            Debug.LogWarning($"Day {gameManager.currentDay}: More schedule items ({scheduleItems.Length}) than available prefabs ({currentBlockPrefabs.Length})");
+
+            // Use the last prefab for remaining items
+            for (int i = currentBlockPrefabs.Length; i < scheduleItems.Length; i++)
+            {
+                GameObject blockObj = Instantiate(currentBlockPrefabs[currentBlockPrefabs.Length - 1], blockContainer);
+                ScheduleBlock block = blockObj.GetComponent<ScheduleBlock>();
+
+                if (block == null)
+                    block = blockObj.AddComponent<ScheduleBlock>();
+
+                block.Initialize(scheduleItems[i], this);
+                scheduleBlocks.Add(block);
+            }
+        }
     }
+
 
     void PositionBlocksManually()
     {
@@ -248,9 +388,11 @@ public class ScheduleManager : MonoBehaviour
         int shapeWidth = shape.GetLength(0);
         int shapeHeight = shape.GetLength(1);
 
-        if (gridX + shapeWidth > gridWidth || gridY + shapeHeight > gridHeight)
+        // Check if block fits within current grid bounds
+        if (gridX + shapeWidth > currentGridWidth || gridY + shapeHeight > currentGridHeight)
             return false;
 
+        // Check if all required cells are empty
         for (int x = 0; x < shapeWidth; x++)
         {
             for (int y = 0; y < shapeHeight; y++)
@@ -286,9 +428,10 @@ public class ScheduleManager : MonoBehaviour
 
     public void RemoveBlock(ScheduleBlock block)
     {
-        for (int x = 0; x < gridWidth; x++)
+        // Find and clear all cells occupied by this block
+        for (int x = 0; x < currentGridWidth; x++)
         {
-            for (int y = 0; y < gridHeight; y++)
+            for (int y = 0; y < currentGridHeight; y++)
             {
                 if (grid[x, y].OccupiedBy == block)
                 {
@@ -377,7 +520,7 @@ public class ScheduleManager : MonoBehaviour
 
     public GridCell GetGridCell(int x, int y)
     {
-        if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight)
+        if (x >= 0 && x < currentGridWidth && y >= 0 && y < currentGridHeight)
             return grid[x, y];
         return null;
     }
@@ -399,7 +542,7 @@ public class ScheduleManager : MonoBehaviour
                     int cellX = gridX + x;
                     int cellY = gridY + y;
 
-                    if (cellX >= 0 && cellX < gridWidth && cellY >= 0 && cellY < gridHeight)
+                    if (cellX >= 0 && cellX < currentGridWidth && cellY >= 0 && cellY < currentGridHeight)
                     {
                         GridCell cell = grid[cellX, cellY];
                         cell.SetVisualState(canPlace ? GridCell.CellState.Highlighted : GridCell.CellState.Invalid);
@@ -411,9 +554,9 @@ public class ScheduleManager : MonoBehaviour
 
     public void ClearPlacementPreview()
     {
-        for (int x = 0; x < gridWidth; x++)
+        for (int x = 0; x < currentGridWidth; x++)
         {
-            for (int y = 0; y < gridHeight; y++)
+            for (int y = 0; y < currentGridHeight; y++)
             {
                 if (!grid[x, y].IsOccupied)
                 {

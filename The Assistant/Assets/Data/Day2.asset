@@ -151,6 +151,7 @@ MonoBehaviour:
   - '12:30 PM: Lunch with Art team '
   - '2:00 PM: Work on Phoenix character designs '
   - '4:00 PM: Call with lead programmer (important) '
+  - '7:00 PM: Grocery shopping'
   timeLimit: 60
   dependencyPenalty: -5
   blockPositions:
