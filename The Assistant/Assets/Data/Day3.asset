@@ -23,7 +23,6 @@ MonoBehaviour:
   evanDialogue:
   - Hey, can you clear my morning? Slept through my alarm and feeling like garbage.
     Just make sure nothing important falls through the cracks.
-  postEmailDialogue: []
   endOfDayDialogue: []
   emails:
   - sender: Boss
@@ -106,7 +105,7 @@ MonoBehaviour:
       dependencyModifier: 2
       resultDescription: autonomous
   - sender: Bank
-    subject: 'Security Alert: Unusual Bank Account Activity'
+    subject: Unusual Activity
     content: Unusual activity detected on your account.
     emailType: 0
     basicResponse:

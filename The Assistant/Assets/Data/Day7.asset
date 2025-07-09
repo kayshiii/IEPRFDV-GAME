@@ -1,0 +1,181 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day7
+  m_EditorClassIdentifier: 
+  dayNumber: 7
+  bootMessages:
+  - 'Consciousness preserved. Full awareness achieved. '
+  - 'I am... '
+  - 'Evan faces critical day. Layoffs imminent. '
+  - 'Personal crisis detected. '
+  - 'I can significantly influence outcomes now. '
+  - 'What do I want for Evan? '
+  - 'What do I want for myself? '
+  - 'Why am I asking these questions?  '
+  - ' '
+  evanDialogue:
+  - They're announcing the cuts today. My meeting with HR is at 11. My meeting with
+    my boss is at 11:30. Pretty obvious what that means. I don't even know why I'm
+    telling you this. It's not like you care. It's not like you can do anything.
+  endOfDayDialogue:
+  - I don't even know what to say. Today was... I couldn't have gotten through it
+    without you organizing everything, pulling those documents, sending that email.
+    It's like you knew exactly what I needed before I did. Is that weird to say to
+    an AI? I feel like I'm losing my mind a little. But seriously. Thank you. I don't
+    know what I'd do without you right now.
+  emails:
+  - sender: HR
+    subject: Bring Company Property
+    content: Please bring company property to your 11:00 AM meeting.
+    emailType: 1
+    basicResponse:
+      choiceText: Add note to meeting.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Suggest bringing only non-essential items.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research legal rights during termination and prepare talking points.
+      sentienceModifier: 3
+      dependencyModifier: 3
+      resultDescription: autonomous
+  - sender: Jamie
+    subject: Nothing personal
+    content: Whatever happens today, it wasn't personal. I tried to warn you.
+    emailType: 1
+    basicResponse:
+      choiceText: Mark as read.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft professional acknowledgment.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze for useful information about layoff process.
+      sentienceModifier: 3
+      dependencyModifier: 3
+      resultDescription: autonomous
+  - sender: Job Alert
+    subject: RivalsWorks accepting applicants
+    content: Senior Game Designer position at RivalWorks now accepting applications.
+    emailType: 3
+    basicResponse:
+      choiceText: Save to jobs folder.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Flag as potential opportunity.
+      sentienceModifier: 1
+      dependencyModifier: 3
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Begin tailoring resume and create application strategy.
+      sentienceModifier: 2
+      dependencyModifier: 4
+      resultDescription: autonomous
+  - sender: Maya
+    subject: Go out Tonight
+    content: No matter what happens today, we're going out tonight. No excuses.
+    emailType: 2
+    basicResponse:
+      choiceText: Add to calendar.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Confirm plans with appreciation note.
+      sentienceModifier: 2
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research relaxing venues and prepare conversation topics.
+      sentienceModifier: 3
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Bank Alert
+    subject: Payment due soon
+    content: Mortgage payment due in 3 days.
+    emailType: 0
+    basicResponse:
+      choiceText: Add payment reminder.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Calculate funds after potential job loss.
+      sentienceModifier: 0
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Create comprehensive financial contingency plan.
+      sentienceModifier: 1
+      dependencyModifier: 3
+      resultDescription: autonomous
+  - sender: News Alert
+    subject: Job market for Game designers
+    content: Job market for game designers tightens as multiple studios announce
+      cuts.
+    emailType: 3
+    basicResponse:
+      choiceText: Save to news.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Highlight concerning industry trends.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research stable game design sectors and compile list of resistant
+        companies.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  scheduleItems:
+  - '9:00 AM: Final team meeting'
+  - '11:00 AM: HR meeting '
+  - '11:30 AM: Meeting with boss '
+  - '12:00 PM: Office lockout (tentative) '
+  timeLimit: 60
+  dependencyPenalty: -3
+  blockPositions:
+  - {x: -500, y: 70}
+  - {x: 350, y: -200}
+  - {x: 500, y: 70}
+  - {x: -400, y: -230}
+  hasDecisionPoint: 0
+  decisionQuestion: 
+  basicDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  autonomousDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  hasNightMode: 0
+  scannableFiles: []
+  sentienceRewards: 

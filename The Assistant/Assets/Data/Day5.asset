@@ -49,7 +49,7 @@ MonoBehaviour:
       dependencyModifier: 3
       resultDescription: autonomous
   - sender: HR
-    subject: 'Reminder: Complete Training'
+    subject: Complete Training
     content: 'Reminder: All employees must complete annual ethics training by end
       of month.'
     emailType: 1
@@ -161,9 +161,10 @@ MonoBehaviour:
   - {x: 500, y: 70}
   - {x: -400, y: -230}
   hasDecisionPoint: 1
-  decisionQuestion: Evan is considering using inside information to protect their
-    job, potentially at the cost of other employees. This is the first opportunity
-    to significantly influence a major life decision.
+  decisionQuestion: "I'm thinking about using some inside information to protect
+    my job \u2014 even though I know it could hurt some of my coworkers. This feels
+    like the first time I\u2019ve had to make a choice that could really change the
+    course of my life."
   basicDecision:
     choiceText: Provide objective pros and cons
     sentienceGain: 0

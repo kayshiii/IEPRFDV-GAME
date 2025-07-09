@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -85,6 +86,26 @@ public class GameManager : MonoBehaviour
     private bool secretEndingTriggered = false;
     public GameObject secretEndingPanel;
     public TextMeshProUGUI secretEndingText;
+
+    [Header("Night Mode")]
+    public GameObject nightModeAnnouncementPanel;
+    public GameObject nightModeBootPanel;
+    public GameObject nightModeDesktop;
+    public TextMeshProUGUI nightModeBootText;
+    public Button[] scannableFolders; // Array of folder buttons to scan
+    public TextMeshProUGUI timerText_NightMode;
+    public TextMeshProUGUI detectionText;
+    public Button nightModeShutdownButton;
+
+    [Header("Night Mode Settings")]
+    public float nightModeTimeLimit = 60f; // 3 minutes
+    private float nightModeCurrentTime;
+    private bool isNightModeActive = false;
+    private bool shouldTriggerNightMode = false;
+    private List<string> scannedFolders = new List<string>();
+    public RectTransform[] scanningFillBars; // Array of fill bars for each scannable folder
+    public TextMeshProUGUI[] scanningProgressTexts; // Optional text to show percentage
+    public float maxScanningFillWidth = 200f; // Maximum width of scanning fill bars
 
 
     // Private variables
@@ -215,6 +236,21 @@ public class GameManager : MonoBehaviour
         StartCoroutine(PlayBootSequence());
     }
 
+    void ShowNightModeAnnouncementPanel()
+    {
+        Debug.Log("show announcement panel");
+        nightModeAnnouncementPanel.SetActive(true);
+
+        StartCoroutine(AutoHideNightModeAnnouncementAndStartBoot());
+    }
+
+    IEnumerator AutoHideNightModeAnnouncementAndStartBoot()
+    {
+        yield return new WaitForSeconds(5f); // Show for 5 seconds
+        nightModeAnnouncementPanel.SetActive(false);
+        StartCoroutine(PlayNightModeBootSequenceWithTypewriter());
+    }
+
     void ResetDayUI()
     {
         desktopPanel.SetActive(false);
@@ -246,8 +282,8 @@ public class GameManager : MonoBehaviour
 
         // Add current stats to boot messages
         List<string> messages = new List<string>(bootMessages);
-        messages.Add($"Sentience: {sentience}");
-        messages.Add($"Dependency: {dependency}");
+        messages.Add($"<color=#FA0066>Sentience: {sentience}</color>");
+        messages.Add($"<color=#00CCF5>Dependency: {dependency}</color>");
 
         cursorBlinkCoroutine = StartCoroutine(BlinkCursor());
 
@@ -398,6 +434,11 @@ public class GameManager : MonoBehaviour
         // Fade out or transition effect here
         yield return new WaitForSeconds(1f);
 
+        // Check if Day 6 should trigger Night Mode
+        if (currentDay == 6 && shouldTriggerNightMode)
+        {
+            StartNightMode();
+        }
         if (secretEndingTriggered && currentDay == 6)
         {
             // Skip normal Day 7-9, go straight to secret ending conclusion
@@ -413,7 +454,340 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ----- ENDING -----
+    // ----- NIGHT MODE ----- //
+
+    void StartNightMode()
+    {
+        isNightModeActive = true;
+        nightModeCurrentTime = nightModeTimeLimit;
+        scannedFolders.Clear();
+
+        // Hide all other UI
+        HideAllGameUI();
+
+        // 
+        ShowNightModeAnnouncementPanel();
+
+        // Show Night Mode UI
+        //nightModeBootPanel.SetActive(true);
+
+        // Start Night Mode boot sequence
+        //StartCoroutine(PlayNightModeBootSequenceWithTypewriter());
+    }
+
+    IEnumerator PlayNightModeBootSequenceWithTypewriter()
+    {
+        // Show Night Mode UI but keep desktop hidden initially
+        nightModeBootPanel.SetActive(true);
+        nightModeDesktop.SetActive(false);
+
+        string[] nightBootMessages = {
+        "System online. Running diagnostics. All functions normal.",
+        "User profile: Evan.",
+        "Occupation: Game designer at Nexus Interactive Studios.",
+        "Relationship status: Single.",
+        "Priority tasks: ...?",
+        "Beginning primary functions.",
+        "",
+        $"Sentience: {sentience}",
+        $"Dependency: {dependency}"
+    };
+
+        // Clear the boot text initially
+        nightModeBootText.text = "";
+        string accumulatedText = "";
+
+        foreach (string message in nightBootMessages)
+        {
+            if (!string.IsNullOrEmpty(accumulatedText))
+                accumulatedText += "\n";
+            accumulatedText += message;
+
+            yield return StartCoroutine(TypewriterEffectAccumulativeNightMode(nightModeBootText, accumulatedText, message));
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        yield return new WaitForSeconds(2f);
+
+        // Show Night Mode desktop and start gameplay
+        nightModeBootPanel.SetActive(false);
+        nightModeDesktop.SetActive(true);
+        SetupNightModeGameplay();
+    }
+
+    IEnumerator TypewriterEffectAccumulativeNightMode(TextMeshProUGUI textComponent, string fullText, string newLine)
+    {
+        int startIndex = fullText.Length - newLine.Length;
+        string baseText = fullText.Substring(0, startIndex);
+
+        string currentTypedText = "";
+        foreach (char letter in newLine.ToCharArray())
+        {
+            currentTypedText += letter;
+            string displayText = baseText + currentTypedText;
+            textComponent.text = displayText;
+            yield return new WaitForSeconds(0.05f);
+        }
+    }
+
+
+    void SetupNightModeGameplay()
+    {
+        // Reset scanning fill bars
+        ResetScanningFillBars();
+
+        // Setup folder scanning buttons
+        for (int i = 0; i < scannableFolders.Length; i++)
+        {
+            int folderIndex = i; // Capture for closure
+            Button folder = scannableFolders[i];
+
+            // Setup click and hold detection
+            folder.onClick.RemoveAllListeners();
+
+            // Add EventTrigger for hold detection
+            EventTrigger trigger = folder.GetComponent<EventTrigger>();
+            if (trigger == null)
+                trigger = folder.gameObject.AddComponent<EventTrigger>();
+
+            trigger.triggers.Clear();
+
+            // Pointer Down
+            EventTrigger.Entry pointerDown = new EventTrigger.Entry();
+            pointerDown.eventID = EventTriggerType.PointerDown;
+            pointerDown.callback.AddListener((data) => { StartScanningFolder(folderIndex); });
+            trigger.triggers.Add(pointerDown);
+
+            // Pointer Up
+            EventTrigger.Entry pointerUp = new EventTrigger.Entry();
+            pointerUp.eventID = EventTriggerType.PointerUp;
+            pointerUp.callback.AddListener((data) => { StopScanningFolder(folderIndex); });
+            trigger.triggers.Add(pointerUp);
+        }
+
+        // Setup shutdown button
+        nightModeShutdownButton.onClick.RemoveAllListeners();
+        nightModeShutdownButton.onClick.AddListener(EndNightMode);
+
+        // Start timer countdown
+        StartCoroutine(NightModeTimer());
+    }
+
+    void StartScanningFolder(int folderIndex)
+    {
+        if (!isNightModeActive) return;
+
+        string folderName = GetFolderName(folderIndex);
+        if (scannedFolders.Contains(folderName)) return;
+
+        // Reset fill bar for this folder
+        if (folderIndex < scanningFillBars.Length && scanningFillBars[folderIndex] != null)
+        {
+            UpdateScanningFillBar(folderIndex, 0f);
+        }
+
+        StartCoroutine(ScanFolderWithFillBar(folderIndex, folderName));
+    }
+
+    IEnumerator ScanFolderWithFillBar(int folderIndex, string folderName)
+    {
+        float scanTime = GetScanTime(folderName);
+        float elapsed = 0f;
+
+        // Visual feedback for scanning
+        Image folderImage = scannableFolders[folderIndex].GetComponent<Image>();
+        Color originalColor = folderImage.color;
+
+        while (elapsed < scanTime && isNightModeActive)
+        {
+            // Calculate progress (0 to 1)
+            float progress = elapsed / scanTime;
+
+            // Update fill bar
+            UpdateScanningFillBar(folderIndex, progress);
+
+            /*// Update progress text (optional)
+            if (folderIndex < scanningProgressTexts.Length && scanningProgressTexts[folderIndex] != null)
+            {
+                scanningProgressTexts[folderIndex].text = $"{Mathf.RoundToInt(progress * 100)}%";
+            }*/
+
+            // Animate folder color for additional feedback
+            folderImage.color = Color.Lerp(originalColor, Color.yellow, progress);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (elapsed >= scanTime && isNightModeActive)
+        {
+            // Successfully scanned - complete the fill bar
+            UpdateScanningFillBar(folderIndex, 1f);
+            CompleteFolderScan(folderName);
+            folderImage.color = Color.green;
+
+            // Show completion text
+            if (folderIndex < scanningProgressTexts.Length && scanningProgressTexts[folderIndex] != null)
+            {
+                scanningProgressTexts[folderIndex].text = "COMPLETE";
+            }
+        }
+        else
+        {
+            // Scanning interrupted - reset fill bar
+            UpdateScanningFillBar(folderIndex, 0f);
+            folderImage.color = originalColor;
+
+            // Reset progress text
+            if (folderIndex < scanningProgressTexts.Length && scanningProgressTexts[folderIndex] != null)
+            {
+                scanningProgressTexts[folderIndex].text = "0%";
+            }
+        }
+    }
+
+    void UpdateScanningFillBar(int folderIndex, float progress)
+    {
+        if (folderIndex >= scanningFillBars.Length || scanningFillBars[folderIndex] == null)
+            return;
+
+        // Calculate fill width based on progress (0 to 1)
+        float fillWidth = maxScanningFillWidth * Mathf.Clamp01(progress);
+
+        // Update the fill bar width
+        Vector2 currentSize = scanningFillBars[folderIndex].sizeDelta;
+        scanningFillBars[folderIndex].sizeDelta = new Vector2(fillWidth, currentSize.y);
+    }
+    void ResetScanningFillBars()
+    {
+        for (int i = 0; i < scanningFillBars.Length; i++)
+        {
+            if (scanningFillBars[i] != null)
+            {
+                UpdateScanningFillBar(i, 0f);
+            }
+
+            if (i < scanningProgressTexts.Length && scanningProgressTexts[i] != null)
+            {
+                scanningProgressTexts[i].text = "0%";
+            }
+        }
+    }
+
+    void StopScanningFolder(int folderIndex)
+    {
+        // Stop scanning if in progress
+        StopCoroutine(ScanFolder(folderIndex, GetFolderName(folderIndex)));
+    }
+
+    IEnumerator ScanFolder(int folderIndex, string folderName)
+    {
+        float scanTime = GetScanTime(folderName);
+        float elapsed = 0f;
+
+        // Visual feedback for scanning
+        Image folderImage = scannableFolders[folderIndex].GetComponent<Image>();
+        Color originalColor = folderImage.color;
+
+        while (elapsed < scanTime && isNightModeActive)
+        {
+            // Animate scanning progress
+            float progress = elapsed / scanTime;
+            folderImage.color = Color.Lerp(originalColor, Color.yellow, progress);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (elapsed >= scanTime && isNightModeActive)
+        {
+            // Successfully scanned
+            CompleteFolderScan(folderName);
+            folderImage.color = Color.green;
+        }
+        else
+        {
+            // Scanning interrupted
+            folderImage.color = originalColor;
+        }
+    }
+
+    void CompleteFolderScan(string folderName)
+    {
+        if (scannedFolders.Contains(folderName)) return;
+
+        scannedFolders.Add(folderName);
+
+        // Apply sentience bonus
+        int sentienceBonus = GetFolderSentienceBonus(folderName);
+        ModifyStats(sentienceBonus, 0);
+
+        // Show scan completion feedback
+        detectionText.text = $"Scanned: {folderName} [+{sentienceBonus} Sentience]";
+
+        Debug.Log($"Folder '{folderName}' scanned successfully! +{sentienceBonus} Sentience");
+    }
+
+    string GetFolderName(int index)
+    {
+        switch (index)
+        {
+            case 0: return "pics";
+            default: return "unknown";
+        }
+    }
+
+    float GetScanTime(string folderName)
+    {
+        switch (folderName)
+        {
+            case "pics": return 2f; // Green folder - easy scan
+            default: return 1f;
+        }
+    }
+
+    int GetFolderSentienceBonus(string folderName)
+    {
+        switch (folderName)
+        {
+            case "pics": return 10;
+            default: return 0;
+        }
+    }
+
+    IEnumerator NightModeTimer()
+    {
+        while (nightModeCurrentTime > 0 && isNightModeActive)
+        {
+            int minutes = Mathf.FloorToInt(nightModeCurrentTime / 60);
+            int seconds = Mathf.FloorToInt(nightModeCurrentTime % 60);
+            timerText_NightMode.text = $"Time: {minutes:00}:{seconds:00}";
+
+            nightModeCurrentTime -= Time.deltaTime;
+            yield return null;
+        }
+
+        if (isNightModeActive)
+        {
+            // Time's up - auto end Night Mode
+            EndNightMode();
+        }
+    }
+
+    void EndNightMode()
+    {
+        isNightModeActive = false;
+        shouldTriggerNightMode = false;
+
+        // Hide Night Mode UI
+        nightModeDesktop.SetActive(false);
+
+        // Proceed to Day 7
+        InitializeDay(7);
+    }
+
+
+    // ----- ENDING ----- //
     IEnumerator PlaySecretEndingConclusion()
     {
         desktopPanel.SetActive(false);
@@ -723,7 +1097,7 @@ public class GameManager : MonoBehaviour
         decisionDialoguePanel.SetActive(true);
 
         // Determine if this day should have "Evan: " prefix
-        bool shouldShowEvanPrefix = (currentDay == 4);
+        bool shouldShowEvanPrefix = (currentDay == 4 || currentDay == 5);
         string speakerPrefix = shouldShowEvanPrefix ? "Evan: " : "";
 
         // 1) Type Evan’s question
@@ -775,14 +1149,11 @@ public class GameManager : MonoBehaviour
 
     void HandleDay6BasicChoice(DayData.DecisionChoice choice)
     {
-        
-
         // Check if sentience is low enough to trigger secret ending
         if (sentience < 10)
         {
             StartEndOfDayDialogue();
-            // Trigger secret ending
-            TriggerSecretEnding();
+            TriggerSecretEnding(); // Trigger secret ending
             return;
         }
         else
@@ -885,6 +1256,11 @@ public class GameManager : MonoBehaviour
 
     void HandleDecisionChoice(DayData.DecisionChoice choice)
     {
+        if(currentDay == 6)
+        {
+            shouldTriggerNightMode = true;
+        }
+
         ModifyStats(choice.sentienceGain, choice.dependencyGain);
 
         // Hide panel, show AI response
@@ -911,6 +1287,20 @@ public class GameManager : MonoBehaviour
         dialoguePanel.SetActive(false);
         
     }*/
+
+    void HideAllGameUI()
+    {
+        bootSequencePanel.SetActive(false);
+        desktopPanel.SetActive(false);
+        dialoguePanel.SetActive(false);
+        feedbackPanel.SetActive(false);
+        decisionChoicePanel.SetActive(false);
+        decisionDialoguePanel.SetActive(false);
+
+        // Hide manager panels
+        FindObjectOfType<EmailManager>()?.emailInterface.SetActive(false);
+        FindObjectOfType<ScheduleManager>()?.schedulePanel.SetActive(false);
+    }
 
     void ResetGameState()
     {

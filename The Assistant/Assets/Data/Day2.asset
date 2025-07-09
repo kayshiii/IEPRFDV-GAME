@@ -23,7 +23,6 @@ MonoBehaviour:
   evanDialogue:
   - Morning. Terrible sleep. Need coffee. Can you check if I have any urgent emails?
     And see if I can reschedule that lunch with the art team today? Not feeling it.
-  postEmailDialogue: []
   endOfDayDialogue:
   - That call with the programmer went better than expected. Thanks for pulling those
     reference images for me right before. And good call on keeping that lunch meeting
@@ -31,7 +30,7 @@ MonoBehaviour:
     thing isn't just another tech gimmick after all.
   emails:
   - sender: HR
-    subject: 'Action Required: Self-Evaluation Due Friday'
+    subject: Complete evaluation
     content: 'Reminder: Complete your quarterly performance self-evaluation by Friday.'
     emailType: 1
     basicResponse:
@@ -51,7 +50,7 @@ MonoBehaviour:
       dependencyModifier: 2
       resultDescription: autonomous
   - sender: Mom
-    subject: "Don\u2019t forget \u2013 Dad\u2019s birthday is next week"
+    subject: "Don\u2019t forget \u2013 Dad\u2019s birthday"
     content: Evan, don't forget your father's birthday is next week. Are you planning
       to visit? He misses you.
     emailType: 2
@@ -159,6 +158,20 @@ MonoBehaviour:
   - {x: 350, y: -200}
   - {x: 500, y: 70}
   - {x: -400, y: -230}
+  hasDecisionPoint: 0
+  decisionQuestion: 
+  basicDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  autonomousDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
   hasNightMode: 0
   scannableFiles: []
   sentienceRewards: 
