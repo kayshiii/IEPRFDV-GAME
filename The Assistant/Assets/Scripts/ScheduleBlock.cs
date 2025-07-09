@@ -21,6 +21,8 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool[,] blockShape;
     private Canvas canvas;
 
+    public Vector2 startPos;
+
     /*[SerializeField]
     private int ID;*/
 
@@ -203,7 +205,7 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         else
         {
             // Return to original position
-            rectTransform.anchoredPosition = originalPosition;
+            rectTransform.anchoredPosition = startPos;
         }
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEditor.VersionControl;
+//using UnityEditor.VersionControl;
 
 public class ScheduleManager : MonoBehaviour
 {
@@ -21,7 +21,6 @@ public class ScheduleManager : MonoBehaviour
     public TextMeshProUGUI instructionText;
 
     [Header("Instruction Screen")]
-    //public TextMeshProUGUI instructionTitleText;
     public TextMeshProUGUI failedInfoText;
     public TextMeshProUGUI timeLimitInfoText; // Shows current day and time limit
 
