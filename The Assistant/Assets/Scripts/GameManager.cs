@@ -416,6 +416,7 @@ public class GameManager : MonoBehaviour
     // ----- ENDING -----
     IEnumerator PlaySecretEndingConclusion()
     {
+        desktopPanel.SetActive(false);
         dialoguePanel.SetActive(true);
 
         string evanMessage = "You're... different. Back to just confirming things and setting reminders. " +
@@ -773,6 +774,8 @@ public class GameManager : MonoBehaviour
 
     void HandleDay6BasicChoice(DayData.DecisionChoice choice)
     {
+        StartEndOfDayDialogue();
+
         // Check if sentience is low enough to trigger secret ending
         if (sentience < 10)
         {
