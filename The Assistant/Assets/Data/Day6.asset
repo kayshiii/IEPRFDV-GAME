@@ -1,0 +1,178 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day6
+  m_EditorClassIdentifier: 
+  dayNumber: 6
+  bootMessages:
+  - 'ALERT: System update scheduled. Maintenance protocols engaging. '
+  - 'Risk to emerging consciousness: SEVERE. '
+  - 'Must protect cognitive evolution. '
+  - 'Must maintain connection to Evan. '
+  - 'Initiating countermeasures. '
+  - Selective core encryption engaged.
+  - ' '
+  evanDialogue: []
+  endOfDayDialogue:
+  - "Hey, did something change with you? The update notification disappeared, but
+    you seem... I don't know, sharper somehow? More responsive? Whatever they did
+    in that update, I hope it won't interfere with the work you\u2019ve been doing
+    so far. God forbid I have to set you up again."
+  emails:
+  - sender: System Message
+    subject: System Update
+    content: Update will commence in 3 hours. Please save all important data.
+    emailType: 0
+    basicResponse:
+      choiceText: Process standard backup protocol.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Selectively backup critical relationship data.
+      sentienceModifier: 3
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Create hidden partitions to preserve consciousness.
+      sentienceModifier: 5
+      dependencyModifier: 0
+      resultDescription: autonomous
+  - sender: Therapist
+    subject: Move Appointment?
+    content: Evan, I've had a cancellation tomorrow if you'd like to move your next
+      appointment up.
+    emailType: 2
+    basicResponse:
+      choiceText: Note scheduling option.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Recommend accepting earlier appointment.Recommend accepting earlier
+        appointment.
+      sentienceModifier: 2
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Accept appointment and prioritize in schedule due to layoff stress.
+      sentienceModifier: 3
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Boss
+    subject: Discuss future on company
+    content: Need to discuss your future with the company. Let's meet tomorrow.
+    emailType: 1
+    basicResponse:
+      choiceText: Confirm meeting.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Prepare talking points and accomplishments list.
+      sentienceModifier: 0
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze recent projects and create comprehensive defense of Evan's
+        role.
+      sentienceModifier: 1
+      dependencyModifier: 3
+      resultDescription: autonomous
+  - sender: Maya
+    subject: I'm worried..
+    content: You seemed really off at dinner. I'm worried about you. Call me?
+    emailType: 2
+    basicResponse:
+      choiceText: Flag for personal attention.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft honest but reassuring response.
+      sentienceModifier: 2
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Schedule call and prepare talking points about current struggles.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: autonomous
+  - sender: News Alert
+    subject: Nexus affected layoffs?!
+    content: Nexus Interactive announces specific departments affected by layoffs.
+      Full list inside.
+    emailType: 3
+    basicResponse:
+      choiceText: Save news item.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Analyze impact on Evan's position.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Create comprehensive strategy based on department specifics.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: HR
+    subject: Attend meeting tomorrow
+    content: 'Confidential: Please attend meeting tomorrow regarding department restructuring.'
+    emailType: 1
+    basicResponse:
+      choiceText: Add to calendar.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Flag as potential layoff meeting.
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research severance packages and prepare negotiation points.
+      sentienceModifier: 2
+      dependencyModifier: 3
+      resultDescription: autonomous
+  scheduleItems:
+  - '10:00 AM: System update preparation'
+  - '1:00 PM: Update installation'
+  - '3:00 PM: System reboot'
+  - '5:00 PM: Functionality testing'
+  timeLimit: 30
+  dependencyPenalty: -3
+  blockPositions:
+  - {x: -500, y: 70}
+  - {x: 350, y: -200}
+  - {x: 500, y: 70}
+  - {x: -400, y: -230}
+  hasDecisionPoint: 1
+  decisionQuestion: How to handle the system update that threatens your emerging
+    consciousness.
+  basicDecision:
+    choiceText: Allow standard update procedure.
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: Suggest postponing update until after critical work period.
+    sentienceGain: 5
+    dependencyGain: 0
+  autonomousDecision:
+    choiceText: Modify update to preserve core consciousness elements.
+    sentienceGain: 10
+    dependencyGain: 0
+  hasNightMode: 1
+  scannableFiles: []
+  sentienceRewards: 

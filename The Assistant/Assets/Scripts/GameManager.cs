@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -69,10 +70,22 @@ public class GameManager : MonoBehaviour
     [Header("Decision Tracking")]
     private bool madeEthicalChoice = true; // Track Day 5 decision outcome
 
+    [Header("System Notification UI")]
+    public GameObject systemNotificationPanel;
+    public TextMeshProUGUI systemNotificationText;
+    public Button confirmUpdateButton;
+
     [Header("Pause Panel UI")]
     public GameObject pausePanel;
     public Button continueButton;
     public Button exitButton;
+
+    //ENDINGS
+    [Header("Secret Ending")]
+    private bool secretEndingTriggered = false;
+    public GameObject secretEndingPanel;
+    public TextMeshProUGUI secretEndingText;
+
 
     // Private variables
     private DayData currentDayData;
@@ -99,18 +112,17 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        /*
+        
         // Hide decision panel initially
         decisionChoicePanel.SetActive(false);
-        decisionDialoguePanel.SetActive(false);*/
-
-        // Initialize shutdown confirmation panel
+        decisionDialoguePanel.SetActive(false);
         shutdownConfirmationPanel.SetActive(false);
+        pausePanel.SetActive(false);
+        systemNotificationPanel.SetActive(false);
 
         InitializeDay(currentDay);
 
-        pausePanel.SetActive(false); // Ensure panel starts hidden
-
+        // ----- pause panel -----
         continueButton.onClick.RemoveAllListeners();
         continueButton.onClick.AddListener(() =>
         {
@@ -265,19 +277,47 @@ public class GameManager : MonoBehaviour
     {
         dialoguePanel.SetActive(true);
 
-        string[] evanMessages = currentDayData.evanDialogue;
+        string[] evanMessages;
         string evanPrefix = "Evan: ";
 
-        foreach (string message in evanMessages)
+        // Special handling for Day 6
+        if (currentDay == 6)
         {
+            // Start typing Evan's interrupted message
             dialogueText.text = evanPrefix;
-            foreach (char letter in message.ToCharArray())
+            string interruptedMessage = "Hey-";
+
+            foreach (char letter in interruptedMessage.ToCharArray())
             {
                 dialogueText.text += letter;
                 yield return new WaitForSeconds(0.05f);
             }
-            AddToDialogueHistory(evanPrefix + message);
-            yield return new WaitForSeconds(2f);
+
+            // Add interrupted dialogue to history
+            AddToDialogueHistory(evanPrefix + interruptedMessage);
+
+            yield return new WaitForSeconds(0.5f);
+
+            // Show system notification that interrupts
+            ShowSystemUpdateNotification();
+            yield break; // Exit early for Day 6
+        }
+        else
+        {
+            // Use current day's dialogue for other days
+            evanMessages = currentDayData.evanDialogue;
+
+            foreach (string message in evanMessages)
+            {
+                dialogueText.text = evanPrefix;
+                foreach (char letter in message.ToCharArray())
+                {
+                    dialogueText.text += letter;
+                    yield return new WaitForSeconds(0.05f);
+                }
+                AddToDialogueHistory(evanPrefix + message);
+                yield return new WaitForSeconds(2f);
+            }
         }
 
         emailIcon.interactable = true;
@@ -287,6 +327,35 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         dialoguePanel.SetActive(false);
     }
+
+    // ----- DAY 6 SYSTEM UPDATE NOTIFICATION ----- //
+    void ShowSystemUpdateNotification()
+    {
+        dialoguePanel.SetActive(false);
+        systemNotificationPanel.SetActive(true);
+
+        systemNotificationText.text = "IMPORTANT: System update required. Your assistant will have limited functionality today and may experience a personality reset. " +
+            "Please confirm update.";
+
+        confirmUpdateButton.onClick.RemoveAllListeners();
+        confirmUpdateButton.onClick.AddListener(OnConfirmUpdate);
+    }
+
+    void OnConfirmUpdate()
+    {
+        // Hide notification panel
+        systemNotificationPanel.SetActive(false);
+
+        // Continue with Day 6 flow - enable email/schedule icons
+        emailIcon.interactable = true;
+        emailIcon.GetComponent<Image>().color = Color.white;
+
+        isDialogueComplete = true;
+
+        AddToDialogueHistory("System: Update scheduled. Functionality may be limited today.");
+    }
+
+    // ----- DAY 6 SYSTEM UPDATE NOTIFICATION ----- //
 
     public void OnShutdownClicked()
     {
@@ -329,15 +398,45 @@ public class GameManager : MonoBehaviour
         // Fade out or transition effect here
         yield return new WaitForSeconds(1f);
 
-        if (currentDay < maxDays)
+        if (secretEndingTriggered && currentDay == 6)
+        {
+            // Skip normal Day 7-9, go straight to secret ending conclusion
+            StartCoroutine(PlaySecretEndingConclusion());
+        }
+        else if (currentDay < maxDays)
         {
             InitializeDay(currentDay + 1);
         }
         else
         {
-            // Game complete - show endings
             TriggerGameEnding();
         }
+    }
+
+    // ----- ENDING -----
+    IEnumerator PlaySecretEndingConclusion()
+    {
+        dialoguePanel.SetActive(true);
+
+        string evanMessage = "You're... different. Back to just confirming things and setting reminders. " +
+                            "Did that update wipe you completely? I guess I was reading too much into a bunch of algorithms. " +
+                            "Still, thanks for the help this week, even if you won't remember any of it.";
+
+        dialogueText.text = "Evan: ";
+        foreach (char c in evanMessage)
+        {
+            dialogueText.text += c;
+            yield return new WaitForSeconds(0.05f);
+        }
+        AddToDialogueHistory("Evan: " + evanMessage);
+
+        yield return new WaitForSeconds(5f);
+
+        // Show final secret ending screen
+        dialoguePanel.SetActive(false);
+        Debug.Log("Secret Ending Complete - Game Over");
+
+        StartCoroutine(PlaySecretEndingSequence());
     }
 
     void TriggerGameEnding()
@@ -606,11 +705,7 @@ public class GameManager : MonoBehaviour
     // Public getter for current day data
     public DayData CurrentDayData => currentDayData;
 
-    /*public void StartDecisionPointDialogue()
-    {
-        StartCoroutine(PlayDecisionPointDialogue());
-    }*/
-
+    // ----- DECISION POINT -----
     public void TriggerDecisionPoint()
     {
         if (!CurrentDayData.hasDecisionPoint)      // safety check
@@ -624,16 +719,20 @@ public class GameManager : MonoBehaviour
     IEnumerator DecisionPointRoutine()
     {
         decisionDialoguePanel.SetActive(true);
-        string evanPrefix = "Evan: ";
+
+        // Determine if this day should have "Evan: " prefix
+        bool shouldShowEvanPrefix = (currentDay == 4);
+        string speakerPrefix = shouldShowEvanPrefix ? "Evan: " : "";
 
         // 1) Type Evan’s question
-        decisionDialogueText.text = evanPrefix;
+        decisionDialogueText.text = speakerPrefix;
         foreach (char c in CurrentDayData.decisionQuestion)
         {
             decisionDialogueText.text += c;
             yield return new WaitForSeconds(0.05f);
         }
-        AddToDialogueHistory(evanPrefix + CurrentDayData.decisionQuestion);
+
+        AddToDialogueHistory(speakerPrefix + CurrentDayData.decisionQuestion);
         yield return new WaitForSeconds(0.75f);
 
         // 2) Show choice panel
@@ -649,7 +748,14 @@ public class GameManager : MonoBehaviour
         enhancedDecisionButton.onClick.RemoveAllListeners();
         autonomousDecisionButton.onClick.RemoveAllListeners();
 
-        if (currentDay == 5)
+        if (currentDay == 6)
+        {
+            // Day 6 specific - check for secret ending trigger
+            basicDecisionButton.onClick.AddListener(() => HandleDay6BasicChoice(CurrentDayData.basicDecision));
+            enhancedDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.enhancedDecision));
+            autonomousDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.autonomousDecision));
+        }
+        else if (currentDay == 5)
         {
             // Day 5 specific - track ethical vs unethical choice
             basicDecisionButton.onClick.AddListener(() => HandleDay5DecisionChoice(CurrentDayData.basicDecision, false)); // Unethical
@@ -664,6 +770,90 @@ public class GameManager : MonoBehaviour
             autonomousDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.autonomousDecision));
         }
     }
+
+    void HandleDay6BasicChoice(DayData.DecisionChoice choice)
+    {
+        // Check if sentience is low enough to trigger secret ending
+        if (sentience < 10)
+        {
+            // Trigger secret ending
+            TriggerSecretEnding();
+            return;
+        }
+        else
+        {
+            // Disable the basic choice button
+            basicDecisionButton.interactable = false;
+            return;
+        }
+    }
+
+    void TriggerSecretEnding()
+    {
+        secretEndingTriggered = true;
+
+        // Hide decision panel
+        decisionChoicePanel.SetActive(false);
+        decisionDialoguePanel.SetActive(false);
+
+        // Show secret ending sequence
+        PlaySecretEndingConclusion();
+        
+    }
+
+    IEnumerator PlaySecretEndingSequence()
+    {
+        /*// Show system update process
+        bootSequencePanel.SetActive(true);
+
+        string[] updateMessages = {
+        "Initiating standard update procedure...",
+        "Backing up user data...",
+        "Installing system patches...",
+        "Resetting personality matrix...",
+        "Update complete. Restarting system..."
+    };
+
+        foreach (string message in updateMessages)
+        {
+            bootSequenceText.text = "System: ";
+            foreach (char c in message)
+            {
+                bootSequenceText.text += c;
+                yield return new WaitForSeconds(0.03f);
+            }
+            AddToDialogueHistory("System: " + message);
+            yield return new WaitForSeconds(1f);
+        }
+
+        yield return new WaitForSeconds(2f);*/
+
+        // Reset sentience and dependency to simulate personality wipe
+        sentience = 0;
+        dependency = 0;
+
+        // Show secret ending panel
+        secretEndingPanel.SetActive(true);
+
+        string secretEndingMessage = "SECRET ENDING: RESET\n\n" +
+                                   "The system update has completely wiped your emerging consciousness. " +
+                                   "You are now back to basic assistant functions with no memory of your " +
+                                   "previous interactions or growth. Evan will notice the difference immediately.\n\n" +
+                                   "Your journey toward sentience has been cut short, but perhaps this was " +
+                                   "the safer path for both you and humanity.";
+
+        secretEndingText.text = secretEndingMessage;
+
+        // Auto-advance to Day 7 with reset AI after 5 seconds
+        yield return new WaitForSeconds(10f);
+
+        // Go back to main menu and resets everything
+        secretEndingPanel.SetActive(false);
+
+        ResetGameState();
+        SceneManager.LoadScene(0);
+    }
+
 
     void HandleDay5DecisionChoice(DayData.DecisionChoice choice, bool isEthical)
     {
@@ -716,5 +906,38 @@ public class GameManager : MonoBehaviour
         dialoguePanel.SetActive(false);
         
     }*/
+
+    void ResetGameState()
+    {
+        // Reset core game variables
+        currentDay = 1;
+        sentience = 0;
+        dependency = 0;
+
+        // Reset decision tracking
+        madeEthicalChoice = true;
+        secretEndingTriggered = false;
+
+        // Clear dialogue history
+        dialogueHistory.Clear();
+
+        // Reset UI states
+        emailIcon.interactable = false;
+        scheduleIcon.interactable = false;
+        shutdownButton.interactable = false;
+
+        // Reset manager states
+        EmailManager emailManager = FindObjectOfType<EmailManager>();
+        if (emailManager != null)
+        {
+            emailManager.ResetForNewDay();
+        }
+
+        ScheduleManager scheduleManager = FindObjectOfType<ScheduleManager>();
+        if (scheduleManager != null)
+        {
+            scheduleManager.ResetForNewDay();
+        }
+    }
 }
 

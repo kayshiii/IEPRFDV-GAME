@@ -380,8 +380,8 @@ public class ScheduleManager : MonoBehaviour
         gameManager.shutdownButton.interactable = true;
         gameManager.shutdownButton.GetComponent<Image>().color = Color.white;
 
-        // Check if this is Day 4 and trigger decision point
-        if (gameManager.currentDay == 4 || gameManager.currentDay == 5)
+        // Days wirh decision points
+        if (gameManager.currentDay == 4 || gameManager.currentDay == 5 || gameManager.currentDay == 6)
         {
             gameManager.TriggerDecisionPoint();
         }
