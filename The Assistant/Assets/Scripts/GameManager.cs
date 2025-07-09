@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour
     private bool showCursor = true;
     private Coroutine cursorBlinkCoroutine;
 
-    private int call = 0;
+    //private int call = 0;
 
     private readonly string[] dayTitles = new string[]
 {

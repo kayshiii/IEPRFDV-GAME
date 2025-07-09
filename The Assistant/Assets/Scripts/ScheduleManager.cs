@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor.VersionControl;
 
 public class ScheduleManager : MonoBehaviour
 {
@@ -21,8 +22,8 @@ public class ScheduleManager : MonoBehaviour
 
     [Header("Instruction Screen")]
     //public TextMeshProUGUI instructionTitleText;
-    public TextMeshProUGUI instructionContentText;
-    public TextMeshProUGUI dayInfoText; // Shows current day and time limit
+    public TextMeshProUGUI failedInfoText;
+    public TextMeshProUGUI timeLimitInfoText; // Shows current day and time limit
 
     [Header("Grid Settings")]
     public int gridWidth = 4;
@@ -93,27 +94,9 @@ public class ScheduleManager : MonoBehaviour
         //instructionTitleText.text = "Schedule Organization";
 
         // Set day info with time limit
-        dayInfoText.text = $"Day {gameManager.currentDay} - Time Limit: {currentDayData.timeLimit} seconds";
+        timeLimitInfoText.text = $"TIMELIMIT: <color=#61FFA2>{currentDayData.timeLimit} SECONDS</color>";
 
-        // Set instruction content
-        string instructions = "HOW TO PLAY:\n\n" +
-                            "• Drag the schedule blocks from the sides\n" +
-                            "• Drop them into the grid to organize your day\n" +
-                            "• All blocks must fit within the grid boundaries\n" +
-                            "• Blocks cannot overlap with each other\n" +
-                            "• Complete the puzzle before time runs out\n\n" +
-                            "SCHEDULE ITEMS:\n";
-
-        // Add current day's schedule items to instructions
-        string[] scheduleItems = currentDayData.scheduleItems;
-        for (int i = 0; i < scheduleItems.Length; i++)
-        {
-            instructions += $"• {scheduleItems[i]}\n";
-        }
-
-        instructions += "\nPress BEGIN when you're ready to start!";
-
-        instructionContentText.text = instructions;
+        failedInfoText.text = $"FAILED: <color=#F70000>{currentDayData.dependencyPenalty} DEPENDENCY</color>";
     }
 
     public void BeginScheduleGame()
