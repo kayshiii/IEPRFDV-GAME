@@ -67,6 +67,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI basicDecisionText;
     public TextMeshProUGUI enhancedDecisionText;
     public TextMeshProUGUI autonomousDecisionText;
+    public GameObject evanImage; // For days 4 and 5
+    public GameObject AssistantImage; // For day 6
 
     [Header("Decision Tracking")]
     private bool madeEthicalChoice = true; // Track Day 5 decision outcome
@@ -313,14 +315,13 @@ public class GameManager : MonoBehaviour
     {
         dialoguePanel.SetActive(true);
 
-        string[] evanMessages;
-        string evanPrefix = "Evan: ";
+        string[] evanMessages = currentDayData.evanDialogue;
 
         // Special handling for Day 6
         if (currentDay == 6)
         {
             // Start typing Evan's interrupted message
-            dialogueText.text = evanPrefix;
+            //dialogueText.text = evanPrefix;
             string interruptedMessage = "Hey-";
 
             foreach (char letter in interruptedMessage.ToCharArray())
@@ -330,7 +331,7 @@ public class GameManager : MonoBehaviour
             }
 
             // Add interrupted dialogue to history
-            AddToDialogueHistory(evanPrefix + interruptedMessage);
+            AddToDialogueHistory(interruptedMessage);
 
             yield return new WaitForSeconds(0.5f);
 
@@ -345,13 +346,13 @@ public class GameManager : MonoBehaviour
 
             foreach (string message in evanMessages)
             {
-                dialogueText.text = evanPrefix;
+                dialogueText.text = "";
                 foreach (char letter in message.ToCharArray())
                 {
                     dialogueText.text += letter;
                     yield return new WaitForSeconds(0.05f);
                 }
-                AddToDialogueHistory(evanPrefix + message);
+                AddToDialogueHistory(message);
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -797,13 +798,12 @@ public class GameManager : MonoBehaviour
                             "Did that update wipe you completely? I guess I was reading too much into a bunch of algorithms. " +
                             "Still, thanks for the help this week, even if you won't remember any of it.";
 
-        dialogueText.text = "Evan: ";
         foreach (char c in evanMessage)
         {
             dialogueText.text += c;
             yield return new WaitForSeconds(0.05f);
         }
-        AddToDialogueHistory("Evan: " + evanMessage);
+        AddToDialogueHistory(evanMessage);
 
         yield return new WaitForSeconds(5f);
 
@@ -982,17 +982,14 @@ public class GameManager : MonoBehaviour
         "Wow that was quick. And efficient too. Alright now help me with my schedule for today. I don't wanna get burnt out too early you know?"
     };
 
-        string evanPrefix = "Evan: ";
-
         foreach (string message in postEmailMessages)
         {
-            dialogueText.text = evanPrefix;
             foreach (char letter in message.ToCharArray())
             {
                 dialogueText.text += letter;
                 yield return new WaitForSeconds(0.05f);
             }
-            AddToDialogueHistory(evanPrefix + message);
+            AddToDialogueHistory(message);
             yield return new WaitForSeconds(2f);
         }
 
@@ -1060,17 +1057,14 @@ public class GameManager : MonoBehaviour
             Debug.Log("gamemanager end of day");
         }
 
-        string evanPrefix = "Evan: ";
-
         foreach (string message in endMessages)
         {
-            dialogueText.text = evanPrefix;
             foreach (char letter in message.ToCharArray())
             {
                 dialogueText.text += letter;
                 yield return new WaitForSeconds(0.05f);
             }
-            AddToDialogueHistory(evanPrefix + message);
+            AddToDialogueHistory(message);
             yield return new WaitForSeconds(2f);
         }
 
@@ -1096,19 +1090,38 @@ public class GameManager : MonoBehaviour
     {
         decisionDialoguePanel.SetActive(true);
 
-        // Determine if this day should have "Evan: " prefix
-        bool shouldShowEvanPrefix = (currentDay == 4 || currentDay == 5);
-        string speakerPrefix = shouldShowEvanPrefix ? "Evan: " : "";
+        // Image display logic
+        bool shouldShowImage = (currentDay == 4 || currentDay == 5 || currentDay == 6);
+
+        if (shouldShowImage)
+        {
+            if (currentDay == 4 || currentDay == 5)
+            {
+                evanImage.SetActive(true);
+                AssistantImage.SetActive(false);
+            }
+            else if (currentDay == 6)
+            {
+                evanImage.SetActive(false);
+                AssistantImage.SetActive(true);
+            }
+        }
+        else
+        {
+            evanImage.SetActive(false);
+            AssistantImage.SetActive(false);
+        }
 
         // 1) Type Evan’s question
-        decisionDialogueText.text = speakerPrefix;
+        decisionDialogueText.text = "";
         foreach (char c in CurrentDayData.decisionQuestion)
         {
             decisionDialogueText.text += c;
             yield return new WaitForSeconds(0.05f);
         }
 
-        AddToDialogueHistory(speakerPrefix + CurrentDayData.decisionQuestion);
+        //AddToDialogueHistory(speakerPrefix + CurrentDayData.decisionQuestion);
+        AddToDialogueHistory(CurrentDayData.decisionQuestion);
         yield return new WaitForSeconds(0.75f);
 
         // 2) Show choice panel

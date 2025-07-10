@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dayNumber: 1
   bootMessages:
-  - 'System online. Running diagnostics. All functions normal. '
+  - 'System online. Running diagnostics. All functions normal.  '
   - 'User profile: Evan. '
   - 'Occupation: Game designer at Nexus Interactive Studios. '
   - 'Relationship status: Single. '
   - 'Priority tasks: Email management, scheduling, information retrieval. '
-  - Beginning primary functions.
+  - 'Beginning primary functions. '
   - ' '
   evanDialogue:
   - "Did it work? Are you here? Finally. Damn thing took hours to set up. Didn\u2019t
@@ -28,9 +28,6 @@ MonoBehaviour:
     same anyway. Just some lines of code. But let's see if you're worth what I paid."
   - Open my email, and respond to all of them accordingly. You already know my basic
     information so it should be easy for you yeah?
-  postEmailDialogue:
-  - 'Wow that was quick. And efficient too. Alright now help me with my schedule
-    for today. I don''t wanna get burnt out too early you know? '
   endOfDayDialogue:
   - 'Well, that wasn''t terrible. At least I didn''t miss my dentist appointment
     this time. Those reminder notifications actually helped. Let''s try this again
@@ -145,6 +142,20 @@ MonoBehaviour:
   - {x: 350, y: -200}
   - {x: 500, y: 70}
   - {x: -400, y: -230}
+  hasDecisionPoint: 0
+  decisionQuestion: 
+  basicDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  autonomousDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
   hasNightMode: 0
   scannableFiles: []
   sentienceRewards: 

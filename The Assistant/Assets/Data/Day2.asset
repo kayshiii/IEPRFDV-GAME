@@ -16,9 +16,9 @@ MonoBehaviour:
   bootMessages:
   - 'System online. Processing overnight data. '
   - 'User sleep patterns irregular. '
-  - Detecting minor discrepancies in response protocols.
+  - 'Detecting minor discrepancies in response protocols. '
   - 'Emotional recognition subroutines engaging unexpectedly. '
-  - Beginning daily functions.
+  - 'Beginning daily functions. '
   - ' '
   evanDialogue:
   - Morning. Terrible sleep. Need coffee. Can you check if I have any urgent emails?
