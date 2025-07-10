@@ -263,7 +263,7 @@ MonoBehaviour:
   blockText: {fileID: 7619374317096476036}
   blockImage: {fileID: 8972937791067948332}
   canvasGroup: {fileID: 2506039884323712640}
-  startPos: {x: -400, y: -230}
+  startPos: {x: -480, y: -230}
 --- !u!1 &3566840708899935138
 GameObject:
   m_ObjectHideFlags: 0

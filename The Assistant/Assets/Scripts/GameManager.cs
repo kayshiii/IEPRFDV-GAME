@@ -121,17 +121,17 @@ public class GameManager : MonoBehaviour
     //private int call = 0;
 
     private readonly string[] dayTitles = new string[]
-{
-    "INITIALIZATION",            // Day 1
-    "ROUTINE ESTABLISHMENT",     // Day 2
-    "THE GLITCH",                // Day 3
-    "PERSONAL ACCESS",           // Day 4
-    "ETHICAL DILEMMA",           // Day 5
-    "SYSTEM UPDATE",             // Day 6
-    "CRISIS POINT",              // Day 7
-    "CONFRONTATION",             // Day 8
-    "FINALE"                     // Day 9
-};
+    {
+        "INITIALIZATION",            // Day 1
+        "ROUTINE ESTABLISHMENT",     // Day 2
+        "THE GLITCH",                // Day 3
+        "PERSONAL ACCESS",           // Day 4
+        "ETHICAL DILEMMA",           // Day 5
+        "SYSTEM UPDATE",             // Day 6
+        "CRISIS POINT",              // Day 7
+        "CONFRONTATION",             // Day 8
+        "FINALE"                     // Day 9
+    };
 
     void Start()
     {
@@ -315,13 +315,14 @@ public class GameManager : MonoBehaviour
     {
         dialoguePanel.SetActive(true);
 
-        string[] evanMessages = currentDayData.evanDialogue;
+        string[] evanMessages;
+        string evanPrefix = "";
 
         // Special handling for Day 6
         if (currentDay == 6)
         {
             // Start typing Evan's interrupted message
-            //dialogueText.text = evanPrefix;
+            dialogueText.text = evanPrefix;
             string interruptedMessage = "Hey-";
 
             foreach (char letter in interruptedMessage.ToCharArray())
@@ -331,7 +332,7 @@ public class GameManager : MonoBehaviour
             }
 
             // Add interrupted dialogue to history
-            AddToDialogueHistory(interruptedMessage);
+            AddToDialogueHistory(evanPrefix + interruptedMessage);
 
             yield return new WaitForSeconds(0.5f);
 
@@ -346,13 +347,13 @@ public class GameManager : MonoBehaviour
 
             foreach (string message in evanMessages)
             {
-                dialogueText.text = "";
+                dialogueText.text = evanPrefix;
                 foreach (char letter in message.ToCharArray())
                 {
                     dialogueText.text += letter;
                     yield return new WaitForSeconds(0.05f);
                 }
-                AddToDialogueHistory(message);
+                AddToDialogueHistory(evanPrefix + message);
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -798,12 +799,13 @@ public class GameManager : MonoBehaviour
                             "Did that update wipe you completely? I guess I was reading too much into a bunch of algorithms. " +
                             "Still, thanks for the help this week, even if you won't remember any of it.";
 
+        dialogueText.text = "";
         foreach (char c in evanMessage)
         {
             dialogueText.text += c;
             yield return new WaitForSeconds(0.05f);
         }
-        AddToDialogueHistory(evanMessage);
+        AddToDialogueHistory("" + evanMessage);
 
         yield return new WaitForSeconds(5f);
 
@@ -980,16 +982,19 @@ public class GameManager : MonoBehaviour
         // Hardcoded Day 1 post-email message
         string[] postEmailMessages = {
         "Wow that was quick. And efficient too. Alright now help me with my schedule for today. I don't wanna get burnt out too early you know?"
-    };
+        };
+
+        string evanPrefix = "";
 
         foreach (string message in postEmailMessages)
         {
+            dialogueText.text = evanPrefix;
             foreach (char letter in message.ToCharArray())
             {
                 dialogueText.text += letter;
                 yield return new WaitForSeconds(0.05f);
             }
-            AddToDialogueHistory(message);
+            AddToDialogueHistory(evanPrefix + message);
             yield return new WaitForSeconds(2f);
         }
 
@@ -1057,14 +1062,17 @@ public class GameManager : MonoBehaviour
             Debug.Log("gamemanager end of day");
         }
 
+        string evanPrefix = "";
+
         foreach (string message in endMessages)
         {
+            dialogueText.text = evanPrefix;
             foreach (char letter in message.ToCharArray())
             {
                 dialogueText.text += letter;
                 yield return new WaitForSeconds(0.05f);
             }
-            AddToDialogueHistory(message);
+            AddToDialogueHistory(evanPrefix + message);
             yield return new WaitForSeconds(2f);
         }
 

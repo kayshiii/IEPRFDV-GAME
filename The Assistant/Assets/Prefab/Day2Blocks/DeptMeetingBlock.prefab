@@ -267,7 +267,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 68.90149, y: 32.74756}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6869020642963849302
@@ -337,7 +337,7 @@ MonoBehaviour:
   blockText: {fileID: 3601322566451740390}
   blockImage: {fileID: 3118814652241925260}
   canvasGroup: {fileID: 1835149776881220923}
-  startPos: {x: 0, y: 0}
+  startPos: {x: 665, y: 95}
 --- !u!1 &3466938089451421259
 GameObject:
   m_ObjectHideFlags: 0

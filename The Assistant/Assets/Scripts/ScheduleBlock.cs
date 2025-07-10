@@ -26,8 +26,12 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     /*[SerializeField]
     private int ID;*/
 
+    GameManager gameManager;
+
     void Awake()
     {
+        gameManager = FindObjectOfType<GameManager>();
+
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
 
@@ -111,23 +115,23 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         // --- DAY 2 ---
         else if (BlockName.Contains("2a"))
         {
-            blockShape = new bool[,] { { false, false, false, true }, { true, true, true, true }, };
+            blockShape = new bool[,] { { true, false, false, false }, { true, true, true, true }, };
         }
         else if (BlockName.Contains("2b"))
         {
-            blockShape = new bool[,] { { false, true, false }, { false, true, false }, { true, true, true } };
+            blockShape = new bool[,] { { false, true, false }, { false, true, false }, { true, true, true } }; // good
         }
         else if (BlockName.Contains("2c"))
         {
-            blockShape = new bool[,] { { true, true, true, true } };
+            blockShape = new bool[,] { { true, true, true, true } }; // good
         }
         else if (BlockName.Contains("2d"))
         {
-            blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false }, { true, true, true, true } };
+            blockShape = new bool[,] { { true, true, true, true }, { false, false, false, true }, { true, true, true, true } }; // u block
         } 
         else if (BlockName.Contains("2e"))
         {
-            blockShape = new bool[,] { { true, true, true }, { false, false, true }, { false, false, true } };
+            blockShape = new bool[,] { { true, true, true }, { true, false, false }, { true, false, false } }; //grocery
         }
     }
 
@@ -251,12 +255,28 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             float offsetX = (shapeWidth - 1) * cellWidth / 2f;
             float offsetY = -(shapeHeight - 1) * cellHeight / 2f;
 
-            Vector2 finalPosition = new Vector2(
-                cellPosition.x + offsetX,
-                cellPosition.y + offsetY - 70f
-            );
+            
 
-            rectTransform.anchoredPosition = finalPosition;
+            if (gameManager.currentDay == 1 )
+            {
+                Vector2 finalPosition = new Vector2(
+                cellPosition.x + offsetX,
+                cellPosition.y + offsetY //- 70f
+
+            );
+                rectTransform.anchoredPosition = finalPosition;
+            }
+            else if (gameManager.currentDay == 2 )
+            {
+                Vector2 finalPosition = new Vector2(
+                cellPosition.x + offsetX,
+                cellPosition.y + offsetY - 25f
+
+            );
+                rectTransform.anchoredPosition = finalPosition;
+            }
+
+            
         }
     }
 

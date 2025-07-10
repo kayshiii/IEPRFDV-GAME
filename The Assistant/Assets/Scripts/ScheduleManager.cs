@@ -91,11 +91,13 @@ public class ScheduleManager : MonoBehaviour
 
         if (gameManager.currentDay == 1)
         {
+            gridVisualAssets[1].SetActive(false);
             gridVisualAssets[0].SetActive(true);
         }
         else if (gameManager.currentDay == 2)
         {
             gridVisualAssets[1].SetActive(true);
+            gridVisualAssets[0].SetActive(false);
         }
     }
 
