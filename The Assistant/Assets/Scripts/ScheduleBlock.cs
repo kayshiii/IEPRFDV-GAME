@@ -255,9 +255,14 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             float offsetX = (shapeWidth - 1) * cellWidth / 2f;
             float offsetY = -(shapeHeight - 1) * cellHeight / 2f;
 
-            
+            Vector2 finalPosition = new Vector2(
+                cellPosition.x + offsetX,
+                cellPosition.y + offsetY //- 70f
 
-            if (gameManager.currentDay == 1 )
+            );
+            rectTransform.anchoredPosition = finalPosition;
+
+            /*if (gameManager.currentDay == 1 )
             {
                 Vector2 finalPosition = new Vector2(
                 cellPosition.x + offsetX,
@@ -274,9 +279,9 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             );
                 rectTransform.anchoredPosition = finalPosition;
-            }
+            }*/
 
-            
+
         }
     }
 

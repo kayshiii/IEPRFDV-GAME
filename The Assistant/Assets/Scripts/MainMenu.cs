@@ -7,12 +7,25 @@ public class MainMenu : MonoBehaviour
 {
     public void PlayGame()
     {
-        // Loads the next scene in the build index
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        StartCoroutine(LoadSceneWithDelay());
     }
 
+    private IEnumerator LoadSceneWithDelay()
+    {
+        // Wait for 3 seconds
+        yield return new WaitForSeconds(1f);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+    private IEnumerator QuitSceneWithDelay()
+    {
+        // Wait for 3 seconds
+        yield return new WaitForSeconds(1f);
+
+        Application.Quit();
+    }
     public void QuitGame()
     {
-        Application.Quit();
+        StartCoroutine(QuitSceneWithDelay());
     }
 }

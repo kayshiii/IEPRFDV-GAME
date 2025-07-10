@@ -26,8 +26,8 @@ public class ScheduleManager : MonoBehaviour
 
     [Header("Day-Specific Grid Configurations")]
     public GameObject[] gridVisualAssets; // Different grid visuals for each day (9 elements)
-    public int[] gridWidths = new int[9];     // Width for each day
-    public int[] gridHeights = new int[9];    // Height for each day
+    public int[] gridWidths = new int[8];     // Width for each day
+    public int[] gridHeights = new int[8];    // Height for each day
 
     // Remove the old: public int gridWidth = 4; public int gridHeight = 5;
     public int currentGridWidth;
@@ -44,7 +44,6 @@ public class ScheduleManager : MonoBehaviour
     public GameObject[] day6BlockPrefabs; // 4 blocks for Day 6
     public GameObject[] day7BlockPrefabs; // 7 blocks for Day 7
     public GameObject[] day8BlockPrefabs; // Variable based on path
-    public GameObject[] day9BlockPrefabs; // Final day blocks
 
     // Remove the old: public GameObject[] blockPrefabs;
     private GameObject[] currentBlockPrefabs;
@@ -88,8 +87,8 @@ public class ScheduleManager : MonoBehaviour
 
             Debug.LogWarning($"No grid configuration found for Day {currentDay}, using default 4x5");
         }
-
-        if (gameManager.currentDay == 1)
+        gridVisualAssets[0].SetActive(true);
+        /*if (gameManager.currentDay == 1)
         {
             gridVisualAssets[1].SetActive(false);
             gridVisualAssets[0].SetActive(true);
@@ -98,7 +97,7 @@ public class ScheduleManager : MonoBehaviour
         {
             gridVisualAssets[1].SetActive(true);
             gridVisualAssets[0].SetActive(false);
-        }
+        }*/
     }
 
     void Start()
@@ -183,9 +182,6 @@ public class ScheduleManager : MonoBehaviour
                 break;
             case 8:
                 currentBlockPrefabs = day8BlockPrefabs;
-                break;
-            case 9:
-                currentBlockPrefabs = day9BlockPrefabs;
                 break;
             default:
                 currentBlockPrefabs = day1BlockPrefabs; // Fallback

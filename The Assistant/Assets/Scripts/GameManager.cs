@@ -421,14 +421,22 @@ public class GameManager : MonoBehaviour
         // Hide the confirmation panel
         shutdownConfirmationPanel.SetActive(false);
 
-        // Proceed with day transition
-        StartCoroutine(TransitionToNextDay());
+        StartCoroutine(ConfirmWithDelay());
     }
 
     void CancelShutdown()
     {
         // Simply hide the confirmation panel
         shutdownConfirmationPanel.SetActive(false);
+    }
+
+    private IEnumerator ConfirmWithDelay()
+    {
+        // Wait for 3 seconds
+        yield return new WaitForSeconds(1f);
+
+        // Proceed with day transition
+        StartCoroutine(TransitionToNextDay());
     }
 
     IEnumerator TransitionToNextDay()

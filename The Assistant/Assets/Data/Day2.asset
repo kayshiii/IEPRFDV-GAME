@@ -107,59 +107,18 @@ MonoBehaviour:
       sentienceModifier: 2
       dependencyModifier: 1
       resultDescription: autonomous
-  - sender: News Alert
-    subject: Transportation Delay
-    content: Major transportation delays downtown due to water main break.
-    emailType: 0
-    basicResponse:
-      choiceText: Save in news folder.
-      sentienceModifier: 0
-      dependencyModifier: 0
-      resultDescription: basic
-    enhancedResponse:
-      choiceText: Check if it affects Evan's commute.
-      sentienceModifier: 0
-      dependencyModifier: 1
-      resultDescription: enhanced
-    autonomousDecision:
-      choiceText: Recalculate Evan's departure times and adjust schedule accordingly.
-      sentienceModifier: 1
-      dependencyModifier: 2
-      resultDescription: autonomous
-  - sender: Social Media Notification
-    subject: James mentioned you
-    content: 'James mentioned you in a comment: ''Evan would know about this game
-      mechanic!'
-    emailType: 3
-    basicResponse:
-      choiceText: Save notification.
-      sentienceModifier: 0
-      dependencyModifier: 0
-      resultDescription: basic
-    enhancedResponse:
-      choiceText: Draft a quick response for Evan to approve.
-      sentienceModifier: 1
-      dependencyModifier: 1
-      resultDescription: enhanced
-    autonomousDecision:
-      choiceText: Research the mentioned game mechanic and prepare detailed response.
-      sentienceModifier: 2
-      dependencyModifier: 2
-      resultDescription: autonomous
   scheduleItems:
   - '9:30 AM: Department meeting '
   - '12:30 PM: Lunch with Art team '
   - '2:00 PM: Work on Phoenix character designs '
   - '4:00 PM: Call with lead programmer (important) '
-  - '7:00 PM: Grocery shopping'
   timeLimit: 60
   dependencyPenalty: -5
   blockPositions:
-  - {x: 450, y: -285}
-  - {x: -550, y: 120}
-  - {x: 665, y: 95}
-  - {x: -540, y: -270}
-  - {x: 360, y: 70}
+  - {x: -650, y: 70}
+  - {x: 400, y: -200}
+  - {x: 650, y: 70}
+  - {x: -480, y: -230}
   hasDecisionPoint: 0
   decisionQuestion: 
   basicDecision:
