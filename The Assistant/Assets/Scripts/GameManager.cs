@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
-using UnityEditor.VersionControl;
+//using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -251,8 +251,8 @@ public class GameManager : MonoBehaviour
         shutdownButton.interactable = false;
 
         // Reset manager states
-        FindObjectOfType<EmailManager>()?.ResetForNewDay();
-        FindObjectOfType<ScheduleManager>()?.ResetForNewDay();
+        FindAnyObjectByType<EmailManager>()?.ResetForNewDay();
+        FindAnyObjectByType<ScheduleManager>()?.ResetForNewDay();
     }
 
     // Method to clear dialogue history
@@ -942,7 +942,7 @@ public class GameManager : MonoBehaviour
         if (emailIcon.interactable)
         {
             Debug.Log("Opening Email Interface");
-            FindObjectOfType<EmailManager>()?.OpenEmailInterface();
+            FindAnyObjectByType<EmailManager>()?.OpenEmailInterface();
         }
     }
 
@@ -951,7 +951,7 @@ public class GameManager : MonoBehaviour
         if (scheduleIcon.interactable)
         {
             Debug.Log("Opening Schedule Interface");
-            ScheduleManager scheduleManager = FindObjectOfType<ScheduleManager>();
+            ScheduleManager scheduleManager = FindAnyObjectByType<ScheduleManager>();
             if (scheduleManager != null)
             {
                 scheduleManager.OpenScheduleInterface();
@@ -1431,8 +1431,8 @@ public class GameManager : MonoBehaviour
         decisionDialoguePanel.SetActive(false);
 
         // Hide manager panels
-        FindObjectOfType<EmailManager>()?.emailInterface.SetActive(false);
-        FindObjectOfType<ScheduleManager>()?.schedulePanel.SetActive(false);
+        FindAnyObjectByType<EmailManager>()?.emailInterface.SetActive(false);
+        FindAnyObjectByType<ScheduleManager>()?.schedulePanel.SetActive(false);
     }
 
     void ResetGameState()
@@ -1455,13 +1455,13 @@ public class GameManager : MonoBehaviour
         shutdownButton.interactable = false;
 
         // Reset manager states
-        EmailManager emailManager = FindObjectOfType<EmailManager>();
+        EmailManager emailManager = FindAnyObjectByType<EmailManager>();
         if (emailManager != null)
         {
             emailManager.ResetForNewDay();
         }
 
-        ScheduleManager scheduleManager = FindObjectOfType<ScheduleManager>();
+        ScheduleManager scheduleManager = FindAnyObjectByType<ScheduleManager>();
         if (scheduleManager != null)
         {
             scheduleManager.ResetForNewDay();

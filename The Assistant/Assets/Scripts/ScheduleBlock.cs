@@ -30,7 +30,7 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     void Awake()
     {
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindAnyObjectByType<GameManager>();
 
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();

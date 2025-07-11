@@ -572,7 +572,7 @@ GameObject:
   - component: {fileID: 75430296}
   - component: {fileID: 75430295}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: SentienceFillBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2252,7 +2252,7 @@ GameObject:
   - component: {fileID: 203235933}
   - component: {fileID: 203235932}
   m_Layer: 5
-  m_Name: 'ScanningFillBar_[FolderName]'
+  m_Name: ScanningFillBar_pics
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4328,7 +4328,7 @@ GameObject:
   - component: {fileID: 402762868}
   - component: {fileID: 402762867}
   m_Layer: 5
-  m_Name: Image (3)
+  m_Name: DependencyFillBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

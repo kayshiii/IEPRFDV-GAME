@@ -81,7 +81,7 @@ public class EmailManager : MonoBehaviour
 
     void Start()
     {
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindAnyObjectByType<GameManager>();
 
         // Setup button listeners
         basicResponseButton.onClick.AddListener(() => HandleEmailChoice(currentEmail.basicResponse));
@@ -267,6 +267,7 @@ public class EmailManager : MonoBehaviour
         {
             if (currentDayEmails.Count == 0 && gameManager.currentDay == 8)
             {
+                // Special case for Day 8 - end of game
                 CloseEmailInterface();
                 gameManager.StartPostEmailDialogue();
                 return;

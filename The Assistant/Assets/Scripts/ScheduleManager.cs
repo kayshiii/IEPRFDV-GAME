@@ -102,7 +102,7 @@ public class ScheduleManager : MonoBehaviour
 
     void Start()
     {
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindAnyObjectByType<GameManager>();
         schedulePanel.SetActive(false);
         completeScheduleButton.onClick.AddListener(CompleteSchedule);
         beginGameButton.onClick.AddListener(BeginScheduleGame); // New button listener
