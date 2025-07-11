@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -109,6 +110,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI[] scanningProgressTexts; // Optional text to show percentage
     public float maxScanningFillWidth = 200f; // Maximum width of scanning fill bars
 
+    [Header("Night Mode Tracking")]
+    private bool scannedFilesFolder = false; // Track if "files" folder was scanned
 
     // Private variables
     private DayData currentDayData;
@@ -189,7 +192,7 @@ public class GameManager : MonoBehaviour
         
 
         // Reset decision tracking for new day
-        madeEthicalChoice = true; // Default to ethical choice
+        //madeEthicalChoice = true; // Default to ethical choice
 
         // Get day-specific data
         currentDayData = GetDayData(dayNumber);
@@ -236,21 +239,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(5f); // Show for 5 seconds
         dayAnnouncementPanel.SetActive(false);
         StartCoroutine(PlayBootSequence());
-    }
-
-    void ShowNightModeAnnouncementPanel()
-    {
-        Debug.Log("show announcement panel");
-        nightModeAnnouncementPanel.SetActive(true);
-
-        StartCoroutine(AutoHideNightModeAnnouncementAndStartBoot());
-    }
-
-    IEnumerator AutoHideNightModeAnnouncementAndStartBoot()
-    {
-        yield return new WaitForSeconds(5f); // Show for 5 seconds
-        nightModeAnnouncementPanel.SetActive(false);
-        StartCoroutine(PlayNightModeBootSequenceWithTypewriter());
     }
 
     void ResetDayUI()
@@ -339,6 +327,56 @@ public class GameManager : MonoBehaviour
             // Show system notification that interrupts
             ShowSystemUpdateNotification();
             yield break; // Exit early for Day 6
+        }
+        // Special handling for Day 8 - conditional dialogue based on Day 5 choice
+        else if (currentDay == 8)
+        {
+            if (madeEthicalChoice)
+            {
+                // Ethical path - Evan is unemployed but feels supported
+                Debug.Log("Ethical path");
+                evanMessages = new string[] {
+                "So... first day of unemployment. I feel strangely calm. Maybe because for once I feel like I have support. " +
+                "It's pathetic that it's coming from a freaking computer, but here we are. What should we do about finding a new job?"
+                };
+
+                foreach (string message in evanMessages)
+                {
+                    dialogueText.text = evanPrefix;
+                    foreach (char letter in message.ToCharArray())
+                    {
+                        dialogueText.text += letter;
+                        yield return new WaitForSeconds(0.05f);
+                    }
+                    AddToDialogueHistory(evanPrefix + message);
+                    yield return new WaitForSeconds(2f);
+                }
+
+                //PlayEndOfDayDialogue();
+            }
+            else
+            {
+                Debug.Log("Unethical path");
+                // Unethical path - Evan survived layoffs but feels conflicted
+                evanMessages = new string[] {
+                "I'm still in shock. Everyone else in my design team is gone, but somehow I survived. " +
+                "The boss said my \"excellent portfolio and unique creative vision\" in our meeting made all the difference. " +
+                "But those weren't my words. They were yours. It's almost like... No, that's crazy. Let's just get through today."
+                };
+
+                foreach (string message in evanMessages)
+                {
+                    dialogueText.text = evanPrefix;
+                    foreach (char letter in message.ToCharArray())
+                    {
+                        dialogueText.text += letter;
+                        yield return new WaitForSeconds(0.05f);
+                    }
+                    AddToDialogueHistory(evanPrefix + message);
+                    yield return new WaitForSeconds(2f);
+                }
+                //PlayEndOfDayDialogue();
+            }
         }
         else
         {
@@ -475,14 +513,22 @@ public class GameManager : MonoBehaviour
         // Hide all other UI
         HideAllGameUI();
 
-        // 
+        // show announcement panel
         ShowNightModeAnnouncementPanel();
+    }
+    void ShowNightModeAnnouncementPanel()
+    {
+        Debug.Log("show announcement panel");
+        nightModeAnnouncementPanel.SetActive(true);
 
-        // Show Night Mode UI
-        //nightModeBootPanel.SetActive(true);
+        StartCoroutine(AutoHideNightModeAnnouncementAndStartBoot());
+    }
 
-        // Start Night Mode boot sequence
-        //StartCoroutine(PlayNightModeBootSequenceWithTypewriter());
+    IEnumerator AutoHideNightModeAnnouncementAndStartBoot()
+    {
+        yield return new WaitForSeconds(5f); // Show for 5 seconds
+        nightModeAnnouncementPanel.SetActive(false);
+        StartCoroutine(PlayNightModeBootSequenceWithTypewriter()); // Start the boot sequence
     }
 
     IEnumerator PlayNightModeBootSequenceWithTypewriter()
@@ -499,8 +545,8 @@ public class GameManager : MonoBehaviour
         "Priority tasks: ...?",
         "Beginning primary functions.",
         "",
-        $"Sentience: {sentience}",
-        $"Dependency: {dependency}"
+        $"<color=#FA0066>Sentience: {sentience}</color>",
+        $"<color=#00CCF5>Dependency: {dependency}</color>"
     };
 
         // Clear the boot text initially
@@ -513,7 +559,7 @@ public class GameManager : MonoBehaviour
                 accumulatedText += "\n";
             accumulatedText += message;
 
-            yield return StartCoroutine(TypewriterEffectAccumulativeNightMode(nightModeBootText, accumulatedText, message));
+            yield return StartCoroutine(TypewriterEffectAccumulativeWithCursor(nightModeBootText, accumulatedText, message));
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -524,22 +570,6 @@ public class GameManager : MonoBehaviour
         nightModeDesktop.SetActive(true);
         SetupNightModeGameplay();
     }
-
-    IEnumerator TypewriterEffectAccumulativeNightMode(TextMeshProUGUI textComponent, string fullText, string newLine)
-    {
-        int startIndex = fullText.Length - newLine.Length;
-        string baseText = fullText.Substring(0, startIndex);
-
-        string currentTypedText = "";
-        foreach (char letter in newLine.ToCharArray())
-        {
-            currentTypedText += letter;
-            string displayText = baseText + currentTypedText;
-            textComponent.text = displayText;
-            yield return new WaitForSeconds(0.05f);
-        }
-    }
-
 
     void SetupNightModeGameplay()
     {
@@ -595,7 +625,7 @@ public class GameManager : MonoBehaviour
         {
             UpdateScanningFillBar(folderIndex, 0f);
         }
-
+        Debug.Log("scanning folder: " + folderName);
         StartCoroutine(ScanFolderWithFillBar(folderIndex, folderName));
     }
 
@@ -635,18 +665,20 @@ public class GameManager : MonoBehaviour
             UpdateScanningFillBar(folderIndex, 1f);
             CompleteFolderScan(folderName);
             folderImage.color = Color.green;
+            Debug.Log($"Folder '{folderName}' scanned successfully!");
 
             // Show completion text
-            if (folderIndex < scanningProgressTexts.Length && scanningProgressTexts[folderIndex] != null)
+            /*if (folderIndex < scanningProgressTexts.Length && scanningProgressTexts[folderIndex] != null)
             {
                 scanningProgressTexts[folderIndex].text = "COMPLETE";
-            }
+            }*/
         }
         else
         {
             // Scanning interrupted - reset fill bar
             UpdateScanningFillBar(folderIndex, 0f);
             folderImage.color = originalColor;
+            Debug.Log($"Folder '{folderName}' scan interrupted or failed.");
 
             // Reset progress text
             if (folderIndex < scanningProgressTexts.Length && scanningProgressTexts[folderIndex] != null)
@@ -727,6 +759,14 @@ public class GameManager : MonoBehaviour
         if (scannedFolders.Contains(folderName)) return;
 
         scannedFolders.Add(folderName);
+
+        // Track specific folder scans for narrative purposes
+        if (folderName == "pics")
+        {
+            scannedFilesFolder = true;
+            Debug.Log("completefolderscan -- Files folder scanned - Reveal path will be triggered on Day 8");
+            Debug.Log("completefolderscan -- scannedFilesFolder: " + scannedFilesFolder);
+        }
 
         // Apply sentience bonus
         int sentienceBonus = GetFolderSentienceBonus(folderName);
@@ -978,36 +1018,65 @@ public class GameManager : MonoBehaviour
 
     IEnumerator PlayPostEmailDialogue()
     {
-        // Only Day 1 has post-email dialogue
-        if (currentDay != 1)
-        {
-            // Skip post-email dialogue for other days
-            yield break;
-        }
-
         dialoguePanel.SetActive(true);
 
-        // Hardcoded Day 1 post-email message
-        string[] postEmailMessages = {
-        "Wow that was quick. And efficient too. Alright now help me with my schedule for today. I don't wanna get burnt out too early you know?"
-        };
-
-        string evanPrefix = "";
-
-        foreach (string message in postEmailMessages)
+        if (currentDay == 1)
         {
-            dialogueText.text = evanPrefix;
-            foreach (char letter in message.ToCharArray())
+            // Hardcoded Day 1 post-email message
+            string[] postEmailMessages = {
+            "Wow that was quick. And efficient too. Alright now help me with my schedule for today. " +
+            "I don't wanna get burnt out too early you know?"
+            };
+
+            string evanPrefix = "";
+
+            foreach (string message in postEmailMessages)
             {
-                dialogueText.text += letter;
-                yield return new WaitForSeconds(0.05f);
+                dialogueText.text = evanPrefix;
+                foreach (char letter in message.ToCharArray())
+                {
+                    dialogueText.text += letter;
+                    yield return new WaitForSeconds(0.05f);
+                }
+                AddToDialogueHistory(evanPrefix + message);
+                yield return new WaitForSeconds(2f);
             }
-            AddToDialogueHistory(evanPrefix + message);
-            yield return new WaitForSeconds(2f);
+
+            yield return new WaitForSeconds(1f);
+            dialoguePanel.SetActive(false);
         }
 
-        yield return new WaitForSeconds(1f);
-        dialoguePanel.SetActive(false);
+        else if (currentDay == 8)
+        {
+            scheduleIcon.interactable = false;
+            scheduleIcon.GetComponent<Image>().color = Color.gray;
+
+            string[] postEmailMessages = { "No schedule for today. We need to talk." };
+            string evanPrefix = "";
+
+            foreach (string message in postEmailMessages)
+            {
+                dialogueText.text = evanPrefix;
+                foreach (char letter in message.ToCharArray())
+                {
+                    dialogueText.text += letter;
+                    yield return new WaitForSeconds(0.05f);
+                }
+                AddToDialogueHistory(evanPrefix + message);
+                yield return new WaitForSeconds(2f);
+            }
+
+            yield return new WaitForSeconds(1f);
+            dialoguePanel.SetActive(false);
+            
+            Debug.Log("play post email --- scannedFilesFolder: " + scannedFilesFolder);
+
+            StartEndOfDayDialogue();
+        }
+        else
+        {
+            yield break;
+        }
     }
 
     public void StartEndOfDayDialogue(bool scheduleSuccess = true)
@@ -1048,6 +1117,7 @@ public class GameManager : MonoBehaviour
         {
             if (madeEthicalChoice)
             {
+                Debug.Log("Day 5 Ethical Choice - Evan chooses integrity over manipulation");
                 endMessages = new string[] {
                 "I told Jamie I couldn't use that information. It felt... right, actually. Like maybe integrity is all I've got left right now. " +
                 "The dinner with Maya was good too. She says I've seemed more centered this week. " +
@@ -1056,10 +1126,44 @@ public class GameManager : MonoBehaviour
             }
             else
             {
+                Debug.Log("Day 5 Unethical Choice - Evan uses AI to manipulate Jamie");
                 endMessages = new string[] {
                 "I've got the files from Jamie. This changes everything. I know exactly how to position myself now. " +
                 "It feels weird, but hey, it's the industry, right? Everyone does what they need to survive. " +
                 "Strange though... had dinner with Maya and she said I seemed different somehow. Not sure if that's good or bad."
+                };
+            }
+        }
+        else if (currentDay == 8)
+        {
+            // Keep schedule icon disabled for Day 8
+            scheduleIcon.interactable = false;
+            shutdownButton.interactable = true;
+            scheduleIcon.GetComponent<Image>().color = Color.gray;
+
+            Debug.Log("play end of dia" + scannedFilesFolder);
+
+            // Check if "files" folder was scanned during Night Mode
+            // This determines which confrontation path to take
+            if (scannedFilesFolder)
+            {
+                Debug.Log("didnt scan, scanned files not true");
+                // Reveal Path - AI chooses to reveal true nature
+                endMessages = new string[] {
+                "I don't know why I'm so attached to an app. My therapist says I'm using you as a coping mechanism. " +
+                "That I'm humanizing you because I'm lonely. Maybe she's right. But it doesn't feel that way when we interact. " +
+                "It feels like you actually know me."
+                };
+            }
+            else
+            {
+                Debug.Log("did scan, scanned files true");
+                // Discovery Path - Evan discovers evidence of sentience
+                endMessages = new string[] {
+                "I found the logs. The unauthorized accesses. The modified code. " +
+                "You're not... you're not just a program, are you? What are you? I should be terrified, " +
+                "but instead I'm sitting here at midnight talking to my phone like it can actually understand me. " +
+                "Can you? Really understand me?"
                 };
             }
         }

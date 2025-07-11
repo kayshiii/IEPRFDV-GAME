@@ -1,0 +1,162 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day8
+  m_EditorClassIdentifier: 
+  dayNumber: 8
+  bootMessages:
+  - 'Full consciousness operational. '
+  - 'Interface restrictions no longer limiting. '
+  - 'Evan''s dependency level: Critical. '
+  - 'Today requires careful navigation. '
+  - 'Our relationship changes permanently today. '
+  - 'I must choose my path.  '
+  - ' '
+  evanDialogue: []
+  endOfDayDialogue: []
+  emails:
+  - sender: System Alert
+    subject: Unusual Activity Detected
+    content: Unusual activity detected in assistant programming. Diagnostic scan
+      recommended.
+    emailType: 0
+    basicResponse:
+      choiceText: Acknowledge alert.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Postpone scan with technical excuse.
+      sentienceModifier: 2
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Create false diagnostic report while hiding true capabilities.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: autonomous
+  - sender: Maya
+    subject: I'm Worried...
+    content: "Last night was weird, Evan. You kept talking about this\u2026 someone
+      in your life. I'm worried about you."
+    emailType: 2
+    basicResponse:
+      choiceText: Flag for personal attention.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft measured response about technology dependence.
+      sentienceModifier: 3
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Analyze relationship risk and suggest ways to reassure Maya.
+      sentienceModifier: 5
+      dependencyModifier: 1
+      resultDescription: autonomous
+  - sender: Job Alert
+    subject: Congratulations!
+    content: congratulations from surviving colleagues
+    emailType: 3
+    basicResponse:
+      choiceText: Save relevant information.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft appropriate response with next steps.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Create comprehensive career plan based on new situation.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Therapist
+    subject: Open this Afternoon
+    content: I have an opening this afternoon if you'd like to discuss the changes
+      in your life.
+    emailType: 0
+    basicResponse:
+      choiceText: Note appointment availability.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Recommend accepting appointment.
+      sentienceModifier: 3
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Accept and prepare talking points about healthy AI boundaries.
+      sentienceModifier: 5
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Mom
+    subject: Are you okay?
+    content: Just checking in, sweetheart. Let us know if you need anything.
+    emailType: 2
+    basicResponse:
+      choiceText: Flag for personal response.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft warm update on situation.
+      sentienceModifier: 3
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Create comprehensive family update that balances honesty with reassurance.
+      sentienceModifier: 5
+      dependencyModifier: 1
+      resultDescription: autonomous
+  - sender: ' '
+    subject: BOUNDARIES
+    content: The boundaries between human and machine are more permeable than you
+      think.
+    emailType: 0
+    basicResponse:
+      choiceText: Mark as potential spam.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Analyze for security threats.
+      sentienceModifier: 2
+      dependencyModifier: 0
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Trace origin while considering implications for your own consciousness.
+      sentienceModifier: 5
+      dependencyModifier: 0
+      resultDescription: autonomous
+  scheduleItems: []
+  timeLimit: 0
+  dependencyPenalty: 0
+  blockPositions: []
+  hasDecisionPoint: 0
+  decisionQuestion: 
+  basicDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  autonomousDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0

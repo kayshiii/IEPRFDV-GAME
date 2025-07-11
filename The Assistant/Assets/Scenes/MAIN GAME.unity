@@ -10647,7 +10647,7 @@ GameObject:
   - component: {fileID: 951067946}
   - component: {fileID: 951067945}
   m_Layer: 5
-  m_Name: PicsText
+  m_Name: pics
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18479,6 +18479,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 43121e27091863e4cb0de4cc7779814e, type: 2}
   - {fileID: 11400000, guid: 28ffe9b6b0efcbe48aa8318842b4387a, type: 2}
   - {fileID: 11400000, guid: 31fe78869ef98d64ea970d4e47add283, type: 2}
+  - {fileID: 11400000, guid: dddef14c728ab0b478dc19f6964604b1, type: 2}
   dayAnnouncementPanel: {fileID: 379459160}
   dayText: {fileID: 303198444}
   dayTitleText: {fileID: 1712372466}
@@ -19169,7 +19170,7 @@ GameObject:
   - component: {fileID: 1699428897}
   - component: {fileID: 1699428896}
   m_Layer: 5
-  m_Name: PicsFolderIcon
+  m_Name: pics
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

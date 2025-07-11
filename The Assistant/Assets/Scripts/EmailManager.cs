@@ -265,6 +265,13 @@ public class EmailManager : MonoBehaviour
 
         if (currentDayEmails.Count == 0)
         {
+            if (currentDayEmails.Count == 0 && gameManager.currentDay == 8)
+            {
+                CloseEmailInterface();
+                gameManager.StartPostEmailDialogue();
+                return;
+            }
+
             // All emails processed - mark as completed
             hasCompletedEmails = true;
             emailsAttempted = true;
