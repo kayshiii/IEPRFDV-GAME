@@ -45,7 +45,7 @@ public class GridCell : MonoBehaviour
                 cellImage.color = highlightColor;
                 break;
             case CellState.Occupied:
-                cellImage.color = occupiedColor;
+                cellImage.color = normalColor;
                 break;
             case CellState.Invalid:
                 cellImage.color = invalidColor;

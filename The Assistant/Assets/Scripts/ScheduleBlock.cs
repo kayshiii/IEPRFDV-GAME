@@ -23,9 +23,6 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public Vector2 startPos;
 
-    /*[SerializeField]
-    private int ID;*/
-
     GameManager gameManager;
 
     void Awake()
@@ -42,24 +39,7 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             blockImage = GetComponent<Image>();
 
         if (blockText == null)
-            blockText = GetComponentInChildren<TextMeshProUGUI>();
-
-        /*switch (ID)
-        {
-            case 0:
-                originalPosition = scheduleManager.blockPositions[0];
-                break;
-            case 1:
-                originalPosition = scheduleManager.blockPositions[1];
-                break;
-            case 2:
-                originalPosition = scheduleManager.blockPositions[2];
-                break;
-            case 3:
-                originalPosition = scheduleManager.blockPositions[3];
-                break;
-        }*/
-            
+            blockText = GetComponentInChildren<TextMeshProUGUI>();            
     }
 
     public void Initialize(string text, ScheduleManager manager)
@@ -78,23 +58,6 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     void SetupBlockShape()
     {
-        /*// Define different shapes for different schedule blocks
-        if (scheduleText.Contains("Team meeting") || scheduleText.Contains("Department meeting"))
-        {
-            blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false } }; // inverted L (2x4) -- good
-        }
-        else if (scheduleText.Contains("Lunch") || scheduleText.Contains("Lunch with Art team"))
-        {
-            blockShape = new bool[,] { { true, true }, { true, true } }; // Square (2x2) -- correct
-        }
-        else if (scheduleText.Contains("Dentist") || scheduleText.Contains("Work on Phoenix character designs"))
-        {
-            blockShape = new bool[,] { { true, false, false, false }, { true, true, true, true } }; // inverted L (4x2) -- good
-        }
-        else if (scheduleText.Contains("Phoenix") || scheduleText.Contains("Call with lead programmer (important)"))
-        {
-            blockShape = new bool[,] { { false, true }, { true, true }, { true, true }, { false, true } }; // (2x4) -- good
-        }*/
         // --- DAY 1 ---
         if (BlockName.Contains("1a"))
         {
@@ -123,7 +86,7 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         else if (BlockName.Contains("2c"))
         {
-            blockShape = new bool[,] { { true, true, true, true } }; // good
+            blockShape = new bool[,] { { true, true, true, true } };
         }
         else if (BlockName.Contains("2d"))
         {
@@ -132,6 +95,19 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         else if (BlockName.Contains("2e"))
         {
             blockShape = new bool[,] { { true, true, true }, { true, false, false }, { true, false, false } }; //grocery
+        }
+        // --- DAY 3 ---
+        else if (BlockName.Contains("3a"))
+        {
+            blockShape = new bool[,] { { true, false, false, false }, { true, true, true, true }, { true, false, false, false }, }; 
+        }
+        else if (BlockName.Contains("3b"))
+        {
+            blockShape = new bool[,] { { true, true, true, true } };
+        }
+        else if (BlockName.Contains("3d"))
+        {
+            blockShape = new bool[,] { { false, false, false, true, true }, { true, true, true, true, true } };
         }
     }
 
@@ -145,10 +121,10 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         IsPlaced = placed;
 
         // Visual feedback for placed state
-        if (canvasGroup != null)
+        /*if (canvasGroup != null)
         {
             canvasGroup.alpha = placed ? 0.8f : 1f;
-        }
+        }*/
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -157,8 +133,8 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             scheduleManager.RemoveBlock(this);
 
         // Make block semi-transparent while dragging
-        if (canvasGroup != null)
-            canvasGroup.alpha = 0.6f;
+        /*if (canvasGroup != null)
+            canvasGroup.alpha = 0.8f;*/
 
         // Clear any placement preview
         scheduleManager.ClearPlacementPreview();
@@ -166,15 +142,17 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnDrag(PointerEventData eventData)
     {
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        //rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 
-        // Show placement preview
-        Vector2 localPoint;
+        // Move block so its center follows the cursor
+        Vector2 cursorWorldPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            scheduleManager.gridContainer.GetComponent<RectTransform>(),
+            rectTransform.parent as RectTransform,
             eventData.position,
             eventData.pressEventCamera,
-            out localPoint);
+            out cursorWorldPos);
+
+        rectTransform.anchoredPosition = cursorWorldPos;
 
         // Calculate grid position based on your grid asset
         RectTransform gridAsset = scheduleManager.gridVisualAsset;
@@ -185,8 +163,8 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         float startX = gridPos.x - (gridAsset.rect.width / 2f);
         float startY = gridPos.y + (gridAsset.rect.height / 2f);
 
-        int gridX = Mathf.FloorToInt((localPoint.x - startX) / cellWidth);
-        int gridY = Mathf.FloorToInt((startY - localPoint.y) / cellHeight);
+        int gridX = Mathf.FloorToInt((cursorWorldPos.x - startX) / cellWidth);
+        int gridY = Mathf.FloorToInt((startY - cursorWorldPos.y) / cellHeight);
 
         bool canPlace = scheduleManager.CanPlaceBlock(this, gridX, gridY);
         scheduleManager.ShowPlacementPreview(this, gridX, gridY, canPlace);
@@ -255,14 +233,11 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             float offsetX = (shapeWidth - 1) * cellWidth / 2f;
             float offsetY = -(shapeHeight - 1) * cellHeight / 2f;
 
-            Vector2 finalPosition = new Vector2(
+            /*Vector2 finalPosition = new Vector2(
                 cellPosition.x + offsetX,
-                cellPosition.y + offsetY //- 70f
-
-            );
-            rectTransform.anchoredPosition = finalPosition;
-
-            /*if (gameManager.currentDay == 1 )
+                cellPosition.y + offsetY);//- 70f
+            rectTransform.anchoredPosition = finalPosition;*/
+            if (gameManager.currentDay == 1)
             {
                 Vector2 finalPosition = new Vector2(
                 cellPosition.x + offsetX,
@@ -271,15 +246,33 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             );
                 rectTransform.anchoredPosition = finalPosition;
             }
-            else if (gameManager.currentDay == 2 )
+            else if (gameManager.currentDay == 2)
             {
                 Vector2 finalPosition = new Vector2(
                 cellPosition.x + offsetX,
-                cellPosition.y + offsetY - 25f
+                cellPosition.y + offsetY - 35f
 
             );
                 rectTransform.anchoredPosition = finalPosition;
-            }*/
+            }
+            else if (gameManager.currentDay == 3)
+            {
+                Vector2 finalPosition = new Vector2(
+                cellPosition.x + offsetX,
+                cellPosition.y + offsetY - 30f
+
+            );
+                rectTransform.anchoredPosition = finalPosition;
+            }
+            else
+            {
+                Vector2 finalPosition = new Vector2(
+                cellPosition.x + offsetX,
+                cellPosition.y + offsetY //- 70f
+
+            );
+                rectTransform.anchoredPosition = finalPosition;
+            }
 
 
         }

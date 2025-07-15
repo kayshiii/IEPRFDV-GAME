@@ -87,8 +87,8 @@ public class ScheduleManager : MonoBehaviour
 
             Debug.LogWarning($"No grid configuration found for Day {currentDay}, using default 4x5");
         }
-        gridVisualAssets[0].SetActive(true);
-        /*if (gameManager.currentDay == 1)
+        
+        if (gameManager.currentDay == 1)
         {
             gridVisualAssets[1].SetActive(false);
             gridVisualAssets[0].SetActive(true);
@@ -97,7 +97,17 @@ public class ScheduleManager : MonoBehaviour
         {
             gridVisualAssets[1].SetActive(true);
             gridVisualAssets[0].SetActive(false);
-        }*/
+        }
+        else if (gameManager.currentDay == 3)
+        {
+            gridVisualAssets[2].SetActive(true);
+            gridVisualAssets[1].SetActive(false);
+        }
+        else
+        {
+            gridVisualAssets[2].SetActive(false);
+            gridVisualAssets[0].SetActive(true);
+        }
     }
 
     void Start()
@@ -144,9 +154,6 @@ public class ScheduleManager : MonoBehaviour
 
     void SetupInstructionContent()
     {
-        // Set title
-        //instructionTitleText.text = "Schedule Organization";
-
         // Set day info with time limit
         timeLimitInfoText.text = $"TIMELIMIT: <color=#61FFA2>{currentDayData.timeLimit} SECONDS</color>";
 

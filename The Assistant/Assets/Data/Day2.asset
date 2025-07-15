@@ -50,7 +50,7 @@ MonoBehaviour:
       dependencyModifier: 2
       resultDescription: autonomous
   - sender: Mom
-    subject: "Don\u2019t forget \u2013 Dad\u2019s birthday"
+    subject: "Dad\u2019s birthday"
     content: Evan, don't forget your father's birthday is next week. Are you planning
       to visit? He misses you.
     emailType: 2
@@ -89,7 +89,7 @@ MonoBehaviour:
       dependencyModifier: 2
       resultDescription: autonomous
   - sender: Coworker
-    subject: "You\u2019re a lifesaver \u2013 thanks for the sketches!"
+    subject: "You\u2019re a lifesaver"
     content: Thanks for sending those concept sketches yesterday! Saved my bacon!
     emailType: 1
     basicResponse:
@@ -107,18 +107,59 @@ MonoBehaviour:
       sentienceModifier: 2
       dependencyModifier: 1
       resultDescription: autonomous
+  - sender: News Alert
+    subject: Transportation Delay
+    content: Major transportation delays downtown due to water main break.
+    emailType: 3
+    basicResponse:
+      choiceText: Save in news folder.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Check if it affects Evan's commute.
+      sentienceModifier: 0
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Recalculate Evan's departure times and adjust schedule accordingly.
+      sentienceModifier: 1
+      dependencyModifier: 2
+      resultDescription: autonomous
+  - sender: Social Media
+    subject: James mentioned you
+    content: 'James mentioned you in a comment: ''Evan would know about this game
+      mechanic!'''
+    emailType: 3
+    basicResponse:
+      choiceText: Save notification.
+      sentienceModifier: 0
+      dependencyModifier: 0
+      resultDescription: basic
+    enhancedResponse:
+      choiceText: Draft a quick response for Evan to approve.
+      sentienceModifier: 1
+      dependencyModifier: 1
+      resultDescription: enhanced
+    autonomousDecision:
+      choiceText: Research the mentioned game mechanic and prepare detailed response.
+      sentienceModifier: 2
+      dependencyModifier: 2
+      resultDescription: autonomous
   scheduleItems:
   - '9:30 AM: Department meeting '
   - '12:30 PM: Lunch with Art team '
   - '2:00 PM: Work on Phoenix character designs '
   - '4:00 PM: Call with lead programmer (important) '
+  - '7:00 PM: Grocery shopping'
   timeLimit: 60
   dependencyPenalty: -5
   blockPositions:
-  - {x: -650, y: 70}
-  - {x: 400, y: -200}
-  - {x: 650, y: 70}
-  - {x: -480, y: -230}
+  - {x: 695, y: 100}
+  - {x: 520, y: -275}
+  - {x: 350, y: 60}
+  - {x: -550, y: 140}
+  - {x: -550, y: -250}
   hasDecisionPoint: 0
   decisionQuestion: 
   basicDecision:
