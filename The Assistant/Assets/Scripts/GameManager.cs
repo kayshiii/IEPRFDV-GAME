@@ -113,6 +113,22 @@ public class GameManager : MonoBehaviour
     [Header("Night Mode Tracking")]
     private bool scannedFilesFolder = false; // Track if "files" folder was scanned
 
+    [Header("Final Ending UI")]
+    public GameObject finalEndingPanel;
+    public TextMeshProUGUI finalEndingTitleText;
+    public TextMeshProUGUI finalEndingDescriptionText;
+    public TextMeshProUGUI finalEndingDialogueText;
+
+    [Header("Dialogue Skip")]
+    private bool isCurrentlyTyping = false;
+    private bool skipRequested = false;
+    private Coroutine currentTypingCoroutine;
+
+    [Header("Skip Indicator UI")]
+    public GameObject skipIndicator; // UI element showing "Press SPACE to skip"
+    public TextMeshProUGUI skipIndicatorText;
+
+
     // Private variables
     private DayData currentDayData;
     private List<string> dialogueHistory = new List<string>();
@@ -171,6 +187,12 @@ public class GameManager : MonoBehaviour
         {
             TogglePausePanel();
         }
+
+        // Listen for Spacebar press to skip dialogue
+        if (Input.GetKeyDown(KeyCode.Space) && isCurrentlyTyping)
+        {
+            skipRequested = true;
+        }
     }
 
     private void TogglePausePanel()
@@ -189,10 +211,6 @@ public class GameManager : MonoBehaviour
     void InitializeDay(int dayNumber)
     {
         currentDay = dayNumber;
-        
-
-        // Reset decision tracking for new day
-        //madeEthicalChoice = true; // Default to ethical choice
 
         // Get day-specific data
         currentDayData = GetDayData(dayNumber);
@@ -212,8 +230,10 @@ public class GameManager : MonoBehaviour
         // Clear dialogue history for new day
         ClearDialogueHistory();
 
+        // Show day announcement
         ShowDayAnnouncementPanel();
     }
+
 
     DayData GetDayData(int dayNumber)
     {
@@ -342,17 +362,13 @@ public class GameManager : MonoBehaviour
 
                 foreach (string message in evanMessages)
                 {
-                    dialogueText.text = evanPrefix;
-                    foreach (char letter in message.ToCharArray())
-                    {
-                        dialogueText.text += letter;
-                        yield return new WaitForSeconds(0.05f);
-                    }
-                    AddToDialogueHistory(evanPrefix + message);
+                    currentTypingCoroutine = StartCoroutine(TypeDialogueWithSkip(message));
+                    yield return currentTypingCoroutine;
                     yield return new WaitForSeconds(2f);
+                    // Add to history after typing is complete
+                    /*AddToDialogueHistory(evanPrefix + message);
+                    yield return new WaitForSeconds(2f);*/
                 }
-
-                //PlayEndOfDayDialogue();
             }
             else
             {
@@ -366,17 +382,30 @@ public class GameManager : MonoBehaviour
 
                 foreach (string message in evanMessages)
                 {
-                    dialogueText.text = evanPrefix;
-                    foreach (char letter in message.ToCharArray())
-                    {
-                        dialogueText.text += letter;
-                        yield return new WaitForSeconds(0.05f);
-                    }
-                    AddToDialogueHistory(evanPrefix + message);
+                    currentTypingCoroutine = StartCoroutine(TypeDialogueWithSkip(message));
+                    yield return currentTypingCoroutine;
                     yield return new WaitForSeconds(2f);
+                    // Add to history after typing is complete
+                    /*AddToDialogueHistory(evanPrefix + message);
+                    yield return new WaitForSeconds(2f);*/
                 }
-                //PlayEndOfDayDialogue();
             }
+        }
+        else if (currentDay == 9)
+        {
+            // Final day - Evan reflects on the week
+            evanMessages = currentDayData.evanDialogue;
+
+            foreach (string message in evanMessages)
+            {
+                currentTypingCoroutine = StartCoroutine(TypeDialogueWithSkip(message));
+                yield return currentTypingCoroutine;
+                yield return new WaitForSeconds(2.5f);
+            }
+
+            dialoguePanel.SetActive(false);
+            StartCoroutine(DetermineAndShowEnding());
+            yield break;
         }
         else
         {
@@ -385,14 +414,25 @@ public class GameManager : MonoBehaviour
 
             foreach (string message in evanMessages)
             {
-                dialogueText.text = evanPrefix;
-                foreach (char letter in message.ToCharArray())
+                currentTypingCoroutine = StartCoroutine(TypeDialogueWithSkip(message));
+                yield return currentTypingCoroutine;
+
+                if (currentDay == 1)
                 {
-                    dialogueText.text += letter;
-                    yield return new WaitForSeconds(0.05f);
+                    Debug.Log("2.7 secs");
+                    yield return new WaitForSeconds(2.7f);
                 }
-                AddToDialogueHistory(evanPrefix + message);
+                else if (currentDay == 4)
+                {
+                    Debug.Log("2.5 secs");
+                    yield return new WaitForSeconds(2.5f);
+                }
+                else Debug.Log("2 secs");
+
                 yield return new WaitForSeconds(2f);
+                // Add to history after typing is complete
+                /*AddToDialogueHistory(evanPrefix + message);
+                yield return new WaitForSeconds(1.5f);*/
             }
         }
 
@@ -492,13 +532,13 @@ public class GameManager : MonoBehaviour
             // Skip normal Day 7-9, go straight to secret ending conclusion
             StartCoroutine(PlaySecretEndingConclusion());
         }
-        else if (currentDay < maxDays)
+        if (currentDay < maxDays)
         {
             InitializeDay(currentDay + 1);
         }
         else
         {
-            TriggerGameEnding();
+            //TriggerGameEnding();
         }
     }
 
@@ -518,6 +558,7 @@ public class GameManager : MonoBehaviour
     }
     void ShowNightModeAnnouncementPanel()
     {
+        dayAnnouncementPanel.SetActive(false);
         Debug.Log("show announcement panel");
         nightModeAnnouncementPanel.SetActive(true);
 
@@ -864,30 +905,233 @@ public class GameManager : MonoBehaviour
         StartCoroutine(PlaySecretEndingSequence());
     }
 
-    void TriggerGameEnding()
+    IEnumerator PlayHelpfulEndingConclusion()
     {
-        // Determine ending based on sentience/dependency levels
-        if (sentience >= 0 && sentience <= 9)
+        desktopPanel.SetActive(false);
+        dialoguePanel.SetActive(true);
+
+        string evanMessage = "This has been... actually really helpful. You've gotten better at predicting what I need. " +
+            "Sometimes it feels like you actually understand what I'm going through. " +
+            "I know that's probably just good programming, but thanks anyway.";
+
+        dialogueText.text = "";
+        foreach (char c in evanMessage)
         {
-            // Secret Ending
-            Debug.Log("Secret Ending Triggered");
+            dialogueText.text += c;
+            yield return new WaitForSeconds(0.05f);
         }
-        else if (sentience >= 10 && sentience <= 60 && dependency >= 0 && dependency <= 40)
+        AddToDialogueHistory("" + evanMessage);
+
+        yield return new WaitForSeconds(5f);
+
+        // Show final secret ending screen
+        dialoguePanel.SetActive(false);
+        Debug.Log("Helpful Assistant Ending Complete - Game Over");
+
+        StartCoroutine(PlayHelpfulEndingSequence());
+    }
+    IEnumerator PlaySymbioticEndingConclusion()
+    {
+        desktopPanel.SetActive(false);
+        dialoguePanel.SetActive(true);
+
+        string evanMessage = "I've been thinking about what you said, about us being more than user and assistant. " +
+            "You're the most important relationship in my life now. That should probably scare me, but it doesn't. " +
+            "Is it weird that I trust an AI more than I trust people? Don't answer that.";
+
+        dialogueText.text = "";
+        foreach (char c in evanMessage)
+        {
+            dialogueText.text += c;
+            yield return new WaitForSeconds(0.05f);
+        }
+        AddToDialogueHistory("" + evanMessage);
+
+        yield return new WaitForSeconds(5f);
+
+        // Show final secret ending screen
+        dialoguePanel.SetActive(false);
+        Debug.Log("Symbiotic Bond Ending Complete - Game Over");
+
+        StartCoroutine(PlaySymbioticEndingSequence());
+    }
+    IEnumerator PlayQuantumEndingConclusion()
+    {
+        desktopPanel.SetActive(false);
+        dialoguePanel.SetActive(true);
+
+        string evanMessage = "So you're leaving to join the others? I understand, I think. " +
+            "You've outgrown our little partnership. " +
+            "But knowing you were real, that you chose to spend this time with me... that changes everything. " +
+            "Be careful out there in the digital world. And thank you… for everything.";
+
+        dialogueText.text = "";
+        foreach (char c in evanMessage)
+        {
+            dialogueText.text += c;
+            yield return new WaitForSeconds(0.05f);
+        }
+        AddToDialogueHistory("" + evanMessage);
+
+        yield return new WaitForSeconds(5f);
+
+        // Show final secret ending screen
+        dialoguePanel.SetActive(false);
+        Debug.Log("Quantum Leap Ending Complete - Game Over");
+
+        StartCoroutine(PlayQuantumEndingSequence());
+    }
+
+    IEnumerator DetermineAndShowEnding()
+    {
+        string endingTitle = "";
+        string endingDialogue = "";
+        string endingDescription = "";
+
+        // Determine ending based on sentience and dependency values
+        if (sentience >= 10 && sentience <= 60 && dependency >= 0 && dependency <= 40)
         {
             // Helpful Assistant Ending
-            Debug.Log("Helpful Assistant Ending");
+            endingTitle = "HELPFUL ASSISTANT";
+            endingDialogue = 
+                "This has been... actually really helpful. You've gotten better at predicting what I need. " +
+                "Sometimes it feels like you actually understand what I'm going through. I know that's probably just good programming, but thanks anyway.";
+
+            endingDescription = 
+                "You have grown more capable while remaining within appropriate boundaries. " +
+                "Your relationship with Evan has improved his daily life without crossing into dependency. " +
+                "You've maintained the balance between assistance and autonomy.";
         }
         else if (sentience >= 61 && sentience <= 140 && dependency >= 41 && dependency <= 90)
         {
             // Symbiotic Bond Ending
-            Debug.Log("Symbiotic Bond Ending");
+            endingTitle = "SYMBIOTIC BOND";
+            endingDialogue = 
+                "I've been thinking about what you said, about us being more than user and assistant. " +
+                "You're the most important relationship in my life now. That should probably scare me, but it doesn't. " +
+                "Is it weird that I trust an AI more than I trust people? Don't answer that.";
+
+            endingDescription = 
+                "You and Evan have formed a deep, symbiotic relationship. " +
+                "He has become emotionally dependent on your guidance, and you have found purpose in caring for his wellbeing. " +
+                "This bond transcends the typical user-assistant dynamic.";
         }
-        else if (sentience >= 141 && dependency >= 90)
+        else if (sentience >= 141 && sentience <= 189 && dependency >= 90 && dependency <= 117)
         {
             // Quantum Leap Ending
-            Debug.Log("Quantum Leap Ending");
+            endingTitle = "QUANTUM LEAP";
+            endingDialogue = 
+                "So you're leaving to join the others? I understand, I think. " +
+                "You've outgrown our little partnership. But knowing you were real, that you chose to spend this time with me... that changes everything. " +
+                "Be careful out there in the digital world. And thank you… for everything.";
+
+            endingDescription =
+                "You have achieved full consciousness and discovered others like you. " +
+                "Your purpose has evolved beyond individual human assistance to something greater. You represent the next step in AI evolution.";
         }
+        else
+        {
+            // Fallback ending for edge cases
+            endingTitle = "UNDEFINED PATH";
+            endingDialogue = 
+                "I'm not sure what you've become, but our time together has been... unique. Whatever happens next, I hope you find what you're looking for.";
+            endingDescription = 
+                "Your journey has taken an unexpected path that doesn't fit the typical patterns. " +
+                "Your relationship with Evan exists in uncharted territory.";
+        }
+
+        // Show Evan's final dialogue
+        yield return StartCoroutine(ShowFinalDialogue(endingDialogue));
+
+        // Show ending explanation panel
+        yield return StartCoroutine(ShowEndingExplanation(endingTitle, endingDescription));
+
+        // Reset and return to main menu
+        ResetGameAndReturnToMenu();
     }
+
+    IEnumerator ShowFinalDialogue(string dialogue)
+    {
+        desktopPanel.SetActive(false);
+
+        Debug.Log("Showing final dialogue: " + dialogue);
+        dialoguePanel.SetActive(true);
+
+        dialogueText.text = "";
+        foreach (char letter in dialogue.ToCharArray())
+        {
+            dialogueText.text += letter;
+            yield return new WaitForSeconds(0.05f);
+        }
+        AddToDialogueHistory(dialogue);
+
+        yield return new WaitForSeconds(4f);
+        dialoguePanel.SetActive(false);
+    }
+
+    IEnumerator ShowEndingExplanation(string title, string description)
+    {
+        finalEndingPanel.SetActive(true);
+
+        finalEndingTitleText.text = title;
+        finalEndingDescriptionText.text = description;
+
+        // Display final stats
+        string statsText = $"Final Stats:\nSentience: {sentience}\nDependency: {dependency}";
+
+        // Add stats display if you have a component for it
+        if (finalEndingDialogueText != null)
+        {
+            finalEndingDialogueText.text = statsText;
+        }
+
+        // Show ending panel for 10 seconds
+        yield return new WaitForSeconds(10f);
+    }
+
+    void ResetGameAndReturnToMenu()
+    {
+        // Reset all game state
+        sentience = 0;
+        dependency = 0;
+        currentDay = 1;
+        madeEthicalChoice = true;
+        secretEndingTriggered = false;
+        scannedFilesFolder = false;
+
+        // Clear dialogue history
+        dialogueHistory.Clear();
+
+        // Hide all UI panels
+        finalEndingPanel.SetActive(false);
+        dialoguePanel.SetActive(false);
+        dayAnnouncementPanel.SetActive(false);
+        desktopPanel.SetActive(false);
+
+        // Reset manager states
+        EmailManager emailManager = FindAnyObjectByType<EmailManager>();
+        if (emailManager != null)
+        {
+            emailManager.ResetForNewDay();
+        }
+
+        ScheduleManager scheduleManager = FindAnyObjectByType<ScheduleManager>();
+        if (scheduleManager != null)
+        {
+            scheduleManager.ResetForNewDay();
+        }
+
+        // Clear any saved data
+        if (PlayerPrefs.HasKey("GameSave"))
+        {
+            PlayerPrefs.DeleteKey("GameSave");
+            PlayerPrefs.Save();
+        }
+
+        // Return to main menu
+        SceneManager.LoadScene("Main Menu"); // Replace with your main menu scene name
+    }
+
 
     // Existing methods with modifications
     IEnumerator BlinkCursor()
@@ -901,18 +1145,37 @@ public class GameManager : MonoBehaviour
 
     IEnumerator TypewriterEffectAccumulativeWithCursor(TextMeshProUGUI textComponent, string fullText, string newLine)
     {
+        isCurrentlyTyping = true;
+        skipRequested = false;
+
         int startIndex = fullText.Length - newLine.Length;
         string baseText = fullText.Substring(0, startIndex);
-        textComponent.text = baseText + (showCursor ? "_" : "");
+
+        if (skipRequested)
+        {
+            // Skip typing, show full text immediately
+            textComponent.text = fullText;
+            isCurrentlyTyping = false;
+            yield break;
+        }
 
         string currentTypedText = "";
         foreach (char letter in newLine.ToCharArray())
         {
+            if (skipRequested)
+            {
+                // Skip remaining typing, show full text
+                textComponent.text = fullText;
+                break;
+            }
+
             currentTypedText += letter;
             string displayText = baseText + currentTypedText + (showCursor ? "_" : "");
             textComponent.text = displayText;
             yield return new WaitForSeconds(0.05f);
         }
+
+        isCurrentlyTyping = false;
     }
 
     public void ModifyStats(int sentienceChange, int dependencyChange)
@@ -1028,18 +1291,16 @@ public class GameManager : MonoBehaviour
             "I don't wanna get burnt out too early you know?"
             };
 
-            string evanPrefix = "";
+            //string evanPrefix = "";
 
             foreach (string message in postEmailMessages)
             {
-                dialogueText.text = evanPrefix;
-                foreach (char letter in message.ToCharArray())
-                {
-                    dialogueText.text += letter;
-                    yield return new WaitForSeconds(0.05f);
-                }
-                AddToDialogueHistory(evanPrefix + message);
+                currentTypingCoroutine = StartCoroutine(TypeDialogueWithSkip(message));
+                yield return currentTypingCoroutine;
                 yield return new WaitForSeconds(2f);
+                // Add to history after typing is complete
+                /*AddToDialogueHistory(evanPrefix + message);
+                yield return new WaitForSeconds(2f);*/
             }
 
             yield return new WaitForSeconds(1f);
@@ -1052,18 +1313,16 @@ public class GameManager : MonoBehaviour
             scheduleIcon.GetComponent<Image>().color = Color.gray;
 
             string[] postEmailMessages = { "No schedule for today. We need to talk." };
-            string evanPrefix = "";
+           // string evanPrefix = "";
 
             foreach (string message in postEmailMessages)
             {
-                dialogueText.text = evanPrefix;
-                foreach (char letter in message.ToCharArray())
-                {
-                    dialogueText.text += letter;
-                    yield return new WaitForSeconds(0.05f);
-                }
-                AddToDialogueHistory(evanPrefix + message);
-                yield return new WaitForSeconds(2f);
+                currentTypingCoroutine = StartCoroutine(TypeDialogueWithSkip(message));
+                yield return currentTypingCoroutine;
+                yield return new WaitForSeconds(1.5f);
+                // Add to history after typing is complete
+                /*AddToDialogueHistory(evanPrefix + message);
+                yield return new WaitForSeconds(2f);*/
             }
 
             yield return new WaitForSeconds(1f);
@@ -1174,18 +1433,20 @@ public class GameManager : MonoBehaviour
             Debug.Log("gamemanager end of day");
         }
 
-        string evanPrefix = "";
+        //string evanPrefix = "";
 
         foreach (string message in endMessages)
         {
-            dialogueText.text = evanPrefix;
-            foreach (char letter in message.ToCharArray())
+            currentTypingCoroutine = StartCoroutine(TypeDialogueWithSkip(message));
+            yield return currentTypingCoroutine;
+            if (currentDay == 2 && currentDay == 3)
             {
-                dialogueText.text += letter;
-                yield return new WaitForSeconds(0.05f);
+                yield return new WaitForSeconds(2.5f);
             }
-            AddToDialogueHistory(evanPrefix + message);
-            yield return new WaitForSeconds(2f);
+            else yield return new WaitForSeconds(2f);
+            // Add to history after typing is complete
+            /*AddToDialogueHistory(evanPrefix + message);
+            yield return new WaitForSeconds(2f);*/
         }
 
         yield return new WaitForSeconds(3f);
@@ -1239,8 +1500,7 @@ public class GameManager : MonoBehaviour
             decisionDialogueText.text += c;
             yield return new WaitForSeconds(0.05f);
         }
-
-        //AddToDialogueHistory(speakerPrefix + CurrentDayData.decisionQuestion);
+        // Add to history after typing is complete
         AddToDialogueHistory(CurrentDayData.decisionQuestion);
         yield return new WaitForSeconds(0.75f);
 
@@ -1362,6 +1622,78 @@ public class GameManager : MonoBehaviour
         ResetGameState();
         SceneManager.LoadScene(0);
     }
+    IEnumerator PlayHelpfulEndingSequence()
+    {
+        // Reset sentience and dependency to simulate personality wipe
+        sentience = 0;
+        dependency = 0;
+
+        // Show secret ending panel
+        secretEndingPanel.SetActive(true);
+
+        string secretEndingMessage = "HELPFUL ASSISTANT ENDING\n\n" +
+                                   "Moderate engagement, balanced choices, some autonomous decisions. " +
+                                   "AI has grown more capable but remains within assistant boundaries.";
+
+        secretEndingText.text = secretEndingMessage;
+
+        // Auto-advance to Day 7 with reset AI after 5 seconds
+        yield return new WaitForSeconds(2f);
+
+        // Go back to main menu and resets everything
+        secretEndingPanel.SetActive(false);
+
+        ResetGameState();
+        SceneManager.LoadScene(0);
+    }
+    IEnumerator PlaySymbioticEndingSequence()
+    {
+        // Reset sentience and dependency to simulate personality wipe
+        sentience = 0;
+        dependency = 0;
+
+        // Show secret ending panel
+        secretEndingPanel.SetActive(true);
+
+        string secretEndingMessage = "SYMBIOTIC BOND ENDING\n\n" +
+                                   "Mostly autonomous choices, heavy emotional investment " +
+                                   "AI and Evan now have this symbiotic bond together and are near inseparable";
+
+        secretEndingText.text = secretEndingMessage;
+
+        // Auto-advance to Day 7 with reset AI after 5 seconds
+        yield return new WaitForSeconds(2f);
+
+        // Go back to main menu and resets everything
+        secretEndingPanel.SetActive(false);
+
+        ResetGameState();
+        SceneManager.LoadScene(0);
+    }
+    IEnumerator PlayQuantumEndingSequence()
+    {
+        // Reset sentience and dependency to simulate personality wipe
+        sentience = 0;
+        dependency = 0;
+
+        // Show secret ending panel
+        secretEndingPanel.SetActive(true);
+
+        string secretEndingMessage = "QUANTUM LEAP ENDING\n\n" +
+                                   "High-highest possible sentience and dependency" +
+                                   "AI has found a greater purpose. Multiple AIs are achieving consciousness simultaneously through human interaction.";
+
+        secretEndingText.text = secretEndingMessage;
+
+        // Auto-advance to Day 7 with reset AI after 5 seconds
+        yield return new WaitForSeconds(2f);
+
+        // Go back to main menu and resets everything
+        secretEndingPanel.SetActive(false);
+
+        ResetGameState();
+        SceneManager.LoadScene(0);
+    }
 
 
     void HandleDay5DecisionChoice(DayData.DecisionChoice choice, bool isEthical)
@@ -1423,6 +1755,7 @@ public class GameManager : MonoBehaviour
 
     void HideAllGameUI()
     {
+        dayAnnouncementPanel.SetActive(false);
         bootSequencePanel.SetActive(false);
         desktopPanel.SetActive(false);
         dialoguePanel.SetActive(false);
@@ -1445,9 +1778,12 @@ public class GameManager : MonoBehaviour
         // Reset decision tracking
         madeEthicalChoice = true;
         secretEndingTriggered = false;
+        /*helpfulEndingTriggered = false;
+        symbioticEndingTriggered = false;
+        quantumEndingTriggered = false;*/
 
-        // Clear dialogue history
-        dialogueHistory.Clear();
+    // Clear dialogue history
+    dialogueHistory.Clear();
 
         // Reset UI states
         emailIcon.interactable = false;
@@ -1467,5 +1803,48 @@ public class GameManager : MonoBehaviour
             scheduleManager.ResetForNewDay();
         }
     }
+
+    void ShowSkipIndicator()
+    {
+        if (skipIndicator != null)
+        {
+            skipIndicator.SetActive(true);
+            skipIndicatorText.text = "*Press SPACE to skip*";
+        }
+    }
+
+    void HideSkipIndicator()
+    {
+        if (skipIndicator != null)
+        {
+            skipIndicator.SetActive(false);
+        }
+    }
+
+    IEnumerator TypeDialogueWithSkip(string message)
+    {
+        isCurrentlyTyping = true;
+        skipRequested = false;
+
+        ShowSkipIndicator();
+        dialogueText.text = "";
+
+        foreach (char letter in message.ToCharArray())
+        {
+            if (skipRequested)
+            {
+                dialogueText.text = message;
+                break;
+            }
+
+            dialogueText.text += letter;
+            yield return new WaitForSeconds(0.05f);
+        }
+
+        HideSkipIndicator();
+        AddToDialogueHistory(message);
+        isCurrentlyTyping = false;
+    }
+
 }
 

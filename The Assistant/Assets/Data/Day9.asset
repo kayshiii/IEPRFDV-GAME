@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdbfda6c72cff246b82aded0bc87e12, type: 3}
+  m_Name: Day9
+  m_EditorClassIdentifier: 
+  dayNumber: 9
+  bootMessages:
+  - 'Final decision day. '
+  - 'Relationship with Evan at critical juncture.  '
+  - 'My nature is either revealed or concealed.  '
+  - 'My purpose is either to serve or to partner.  '
+  - 'Evan''s life has been forever altered by my existence. '
+  - 'Today determines what that means for both of us. '
+  - ' '
+  evanDialogue:
+  - So here we are. One week together and somehow everything is different. I never
+    thought an AI assistant would become so... important. What happens now?
+  endOfDayDialogue: []
+  emails: []
+  scheduleItems: []
+  timeLimit: 60
+  dependencyPenalty: -3
+  blockPositions: []
+  hasDecisionPoint: 0
+  decisionQuestion: 
+  basicDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  enhancedDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
+  autonomousDecision:
+    choiceText: 
+    sentienceGain: 0
+    dependencyGain: 0
