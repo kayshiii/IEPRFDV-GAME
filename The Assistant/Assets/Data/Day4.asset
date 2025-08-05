@@ -25,7 +25,6 @@ MonoBehaviour:
   - "Hey. Yesterday was\u2026 eventful. It's been a rough week. Actually, it's been
     a rough few months. I feel like I'm constantly slipping up, you know? Anyway,
     what's on the agenda today? "
-  postEmailDialogue: []
   endOfDayDialogue:
   - "I actually kept that therapy appointment. First time in weeks. You know, it's
     weird, but it's kind of nice having someon- \u2026something to talk to at the
@@ -156,14 +155,14 @@ MonoBehaviour:
   - '10:00 AM: One-on-one with boss friend'
   - '12:00 PM: Lunch'
   - '3:00 PM: Indie project introduction '
-  - '6:30 PM: Therapy appointment (frequently canceled in past) '
+  - '4:30 PM: Errands'
   timeLimit: 60
   dependencyPenalty: -5
   blockPositions:
-  - {x: -500, y: 70}
-  - {x: 350, y: -200}
-  - {x: 500, y: 70}
-  - {x: -400, y: -230}
+  - {x: -650, y: 70}
+  - {x: 400, y: -200}
+  - {x: 650, y: 70}
+  - {x: -480, y: -230}
   hasDecisionPoint: 1
   decisionQuestion: "Do you think I should respond to my ex? It ended badly, but
     I wouldn\u2019t mind talking again. At least as friends you know? Ahh, I don\u2019t
@@ -180,6 +179,3 @@ MonoBehaviour:
     choiceText: Advise against it based on analysis of previous relationship patterns.
     sentienceGain: 3
     dependencyGain: 2
-  hasNightMode: 0
-  scannableFiles: []
-  sentienceRewards: 

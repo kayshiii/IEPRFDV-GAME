@@ -1223,6 +1223,8 @@ public class GameManager : MonoBehaviour
         {
             scheduleIcon.interactable = false;
             scheduleIcon.GetComponent<Image>().color = Color.gray;
+            emailIcon.interactable = false;
+            emailIcon.GetComponent<Image>().color = Color.gray;
 
             string[] postEmailMessages = { "No schedule for today. We need to talk." };
            // string evanPrefix = "";
@@ -1423,7 +1425,14 @@ public class GameManager : MonoBehaviour
         enhancedDecisionButton.onClick.RemoveAllListeners();
         autonomousDecisionButton.onClick.RemoveAllListeners();
 
-        if (currentDay == 6)
+        if (currentDay == 6 && sentience > 10)
+        {
+            basicDecisionButton.gameObject.SetActive(false);
+
+            enhancedDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.enhancedDecision));
+            autonomousDecisionButton.onClick.AddListener(() => HandleDecisionChoice(CurrentDayData.autonomousDecision));
+        }
+        else if (currentDay == 6)
         {
             // Day 6 specific - check for secret ending trigger
             basicDecisionButton.onClick.AddListener(() => HandleDay6BasicChoice(CurrentDayData.basicDecision));
@@ -1458,7 +1467,7 @@ public class GameManager : MonoBehaviour
         else
         {
             // Disable the basic choice button
-            basicDecisionButton.interactable = false;
+            basicDecisionButton.gameObject.SetActive(false);
             return;
         }
     }

@@ -61,15 +61,15 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         // --- DAY 1 ---
         if (BlockName.Contains("1a"))
         {
-            blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false } };
+            blockShape = new bool[,] { { true, true, true, true }, { true, false, false, false } }; // 1a - horizontal line with a tail
         }
         else if (BlockName.Contains("1b"))
         {
-            blockShape = new bool[,] { { true, true }, { true, true } };
+            blockShape = new bool[,] { { true, true }, { true, true } }; //2x2 square
         }
         else if (BlockName.Contains("1c"))
         {
-            blockShape = new bool[,] { { true, false, false, false }, { true, true, true, true } };
+            blockShape = new bool[,] { { true, false, false, false }, { true, true, true, true } }; // 1c - vertical line with a tail
         }
         else if (BlockName.Contains("1d"))
         {
@@ -108,6 +108,27 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         else if (BlockName.Contains("3d"))
         {
             blockShape = new bool[,] { { false, false, false, true, true }, { true, true, true, true, true } };
+        }
+        // --- DAY 4 ---
+        else if (BlockName.Contains("4a"))
+        {
+            blockShape = new bool[,] { { true, false, false}, { true, true, true} }; 
+        }
+        else if (BlockName.Contains("4b"))
+        {
+            blockShape = new bool[,] { { false, false, true, }, { false, false, true }, { true, true, true }, { true, true, true }, { false, true, true } };
+        }
+        else if (BlockName.Contains("4c"))
+        {
+            blockShape = new bool[,] { {true}, {true}, {true}, {true} };
+        }
+        else if (BlockName.Contains("4d"))
+        {
+            blockShape = new bool[,] { {false, true, true}, {false, true, false}, {false, true, false}, {false, true, false}, {true, true, false} };
+        }
+        else if (BlockName.Contains("4e"))
+        {
+            blockShape = new bool[,] { {true, true, true, true}, {false, false, false, true} };
         }
     }
 
@@ -264,6 +285,15 @@ public class ScheduleBlock : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             );
                 rectTransform.anchoredPosition = finalPosition;
             }
+            /*else if (gameManager.currentDay == 4)
+            {
+                Vector2 finalPosition = new Vector2(
+                cellPosition.x + offsetX + 30f,
+                cellPosition.y + offsetY
+
+            );
+                rectTransform.anchoredPosition = finalPosition;
+            }*/
             else
             {
                 Vector2 finalPosition = new Vector2(

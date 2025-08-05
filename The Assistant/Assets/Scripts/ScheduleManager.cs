@@ -103,6 +103,11 @@ public class ScheduleManager : MonoBehaviour
             gridVisualAssets[2].SetActive(true);
             gridVisualAssets[1].SetActive(false);
         }
+        /*else if (gameManager.currentDay == 4)
+        {
+            gridVisualAssets[3].SetActive(true);
+            gridVisualAssets[2].SetActive(false);
+        }*/
         else
         {
             gridVisualAssets[2].SetActive(false);
