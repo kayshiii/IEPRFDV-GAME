@@ -1566,10 +1566,11 @@ void HandleDay5DecisionChoice(DayData.DecisionChoice choice, bool isEthical)
 
 void SetDecisionButton(Button btn, TextMeshProUGUI txt, DayData.DecisionChoice choice)
 {
-    string tag = "";
-    if (choice.sentienceGain > 0) tag += $" [+{choice.sentienceGain} S]";
-    if (choice.dependencyGain > 0) tag += $" [+{choice.dependencyGain} D]";
-    txt.text = choice.choiceText + tag;
+    /* string tag = "";
+        if (choice.sentienceGain > 0) tag += $" [+{choice.sentienceGain} S]";
+        if (choice.dependencyGain > 0) tag += $" [+{choice.dependencyGain} D]";
+        txt.text = choice.choiceText + tag;*/
+        txt.text = choice.choiceText;
 }
 
 void HandleDecisionChoice(DayData.DecisionChoice choice)

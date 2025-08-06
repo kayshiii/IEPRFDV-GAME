@@ -320,14 +320,15 @@ public class EmailManager : MonoBehaviour
     void UpdateChoiceButtonText(Button button, EmailChoice choice)
     {
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
-        string statText = "";
+        /*string statText = "";
 
         if (choice.sentienceModifier > 0)
             statText += $" [+{choice.sentienceModifier} Sentience]";
         if (choice.dependencyModifier > 0)
-            statText += $" [+{choice.dependencyModifier} Dependency]";
+            statText += $" [+{choice.dependencyModifier} Dependency]";*/
 
-        buttonText.text = choice.choiceText + statText;
+        //buttonText.text = choice.choiceText + statText;
+        buttonText.text = choice.choiceText;
     }
 
     void HandleEmailChoice(EmailChoice choice)
