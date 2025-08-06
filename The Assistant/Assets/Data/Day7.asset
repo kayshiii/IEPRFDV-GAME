@@ -110,7 +110,7 @@ MonoBehaviour:
       sentienceModifier: 3
       dependencyModifier: 2
       resultDescription: autonomous
-  - sender: Bank Alert
+  - sender: Bank
     subject: Payment due soon
     content: Mortgage payment due in 3 days.
     emailType: 0
@@ -176,6 +176,3 @@ MonoBehaviour:
     choiceText: 
     sentienceGain: 0
     dependencyGain: 0
-  hasNightMode: 0
-  scannableFiles: []
-  sentienceRewards: 

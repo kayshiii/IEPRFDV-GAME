@@ -129,7 +129,7 @@ MonoBehaviour:
       sentienceModifier: 1
       dependencyModifier: 2
       resultDescription: autonomous
-  - sender: Bank Alert
+  - sender: Bank
     subject: Account overdrawn
     content: Your account is overdrawn.
     emailType: 0
@@ -177,6 +177,3 @@ MonoBehaviour:
     choiceText: Strongly advise against using leaked information, emphasizing integrity
     sentienceGain: 5
     dependencyGain: 3
-  hasNightMode: 0
-  scannableFiles: []
-  sentienceRewards: 

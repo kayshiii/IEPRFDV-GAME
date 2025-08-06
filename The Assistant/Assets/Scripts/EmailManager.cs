@@ -79,6 +79,76 @@ public class EmailManager : MonoBehaviour
     private GameManager gameManager;
     private bool emailsAttempted = false;
 
+    [Header("Icon Control Settings")]
+    public Dictionary<string, string[]> senderIconMapping = new Dictionary<string, string[]>();
+
+    void InitializeSenderIconMapping()
+    {
+        // Define which icons should be active for specific senders
+        //work
+        senderIconMapping["Boss"] = new string[] { "bossIcon" };
+        senderIconMapping["Coworker"] = new string[] { "coworkerIcon" };
+        senderIconMapping["HR"] = new string[] { "hrIcon" };
+        senderIconMapping["Tim"] = new string[] { "timIcon" };
+        senderIconMapping["Jamie"] = new string[] { "jamieIcon" };
+        //personal
+        senderIconMapping["Mom"] = new string[] { "momIcon" };
+        senderIconMapping["Maya"] = new string[] { "mayaIcon" };
+        senderIconMapping["Ex-Partner"] = new string[] { "exIcon" };
+        senderIconMapping["Therapist"] = new string[] { "therapistIcon" };
+        senderIconMapping["Friend"] = new string[] { "coworkerIcon" };
+        //service
+        senderIconMapping["Utility Company"] = new string[] { "newsletterIcon" };
+        senderIconMapping["Security Alert"] = new string[] { "newsletterIcon" };
+        senderIconMapping["Service Alert"] = new string[] { "newsletterIcon" };
+        senderIconMapping["News Alert"] = new string[] { "newsAlertIcon" };
+        senderIconMapping["Social Media"] = new string[] { "socMedIcon" };
+        senderIconMapping["Dr. Office"] = new string[] { "newsletterIcon" };
+        senderIconMapping["Bank"] = new string[] { "bankIcon" };
+        senderIconMapping["Newsletter"] = new string[] { "newsletterIcon" };
+        senderIconMapping["Job Listing Service"] = new string[] { "joblistingIcon" };
+        senderIconMapping["System Message"] = new string[] { "newsletterIcon" };
+        senderIconMapping["Job Alert"] = new string[] { "joblistingIcon" };
+        senderIconMapping["System Alert"] = new string[] { "newsletterIcon" };
+        //strange
+        senderIconMapping[" "] = new string[] { "strangeIcon" };
+    }
+
+    void SetEmailItemIconsBySender(GameObject emailItem, string senderName)
+    {
+        // Initialize mapping if not done
+        if (senderIconMapping.Count == 0)
+            InitializeSenderIconMapping();
+
+        // Get all icon objects in the email item
+        Transform[] allChildren = emailItem.GetComponentsInChildren<Transform>();
+
+        // First, deactivate all icons
+        foreach (Transform child in allChildren)
+        {
+            if (child.name.ToLower().Contains("icon"))
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+
+        // Activate icons for this specific sender
+        if (senderIconMapping.ContainsKey(senderName))
+        {
+            string[] iconsToActivate = senderIconMapping[senderName];
+
+            foreach (string iconName in iconsToActivate)
+            {
+                Transform iconTransform = emailItem.transform.Find(iconName);
+                if (iconTransform != null)
+                {
+                    iconTransform.gameObject.SetActive(true);
+                }
+            }
+        }
+    }
+
+
     void Start()
     {
         gameManager = FindAnyObjectByType<GameManager>();
@@ -192,11 +262,17 @@ public class EmailManager : MonoBehaviour
 
             AddEmailTypeIndicator(emailItem, filteredEmails[i].emailType);
 
+            // ADD THIS LINE - Set icons based on sender
+            SetEmailItemIconsBySender(emailItem, filteredEmails[i].sender);
+            // OR if using the Email class approach:
+            // SetEmailItemIcons(emailItem, filteredEmails[i]);
+
             // Add click listener
             Email emailRef = filteredEmails[i];
             emailButton.onClick.AddListener(() => ShowEmailDetail(emailRef));
         }
     }
+
 
     void AddEmailTypeIndicator(GameObject emailItem, EmailType emailType)
     {
