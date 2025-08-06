@@ -387,29 +387,6 @@ public class EmailManager : MonoBehaviour
         spamFilterButton.GetComponent<Image>().color = Color.white;
         allFilterButton.GetComponent<Image>().color = Color.white;
 
-        /*// Highlight active filter
-        if (showAllEmails)
-        {
-            allFilterButton.GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            switch (currentFilter)
-            {
-                case EmailType.Important:
-                    importantFilterButton.GetComponent<Image>().color = Color.yellow;
-                    break;
-                case EmailType.Work:
-                    workFilterButton.GetComponent<Image>().color = Color.yellow;
-                    break;
-                case EmailType.Personal:
-                    personalFilterButton.GetComponent<Image>().color = Color.yellow;
-                    break;
-                case EmailType.Spam:
-                    spamFilterButton.GetComponent<Image>().color = Color.yellow;
-                    break;
-            }
-        }*/
     }
 
     void UpdateFilterText()
