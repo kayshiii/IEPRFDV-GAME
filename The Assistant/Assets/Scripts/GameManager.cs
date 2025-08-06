@@ -115,9 +115,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Final Ending UI")]
     public GameObject finalEndingPanel;
+    public GameObject endingFramePanel;
     public TextMeshProUGUI finalEndingTitleText;
     public TextMeshProUGUI finalEndingDescriptionText;
     public TextMeshProUGUI finalEndingDialogueText;
+    public GameObject ending1;
+    public GameObject ending2;
+    public GameObject ending3;
 
     [Header("Dialogue Skip")]
     private bool isCurrentlyTyping = false;
@@ -904,6 +908,8 @@ public class GameManager : MonoBehaviour
         if (sentience >= 10 && sentience <= 60 && dependency >= 0 && dependency <= 40)
         {
             // Helpful Assistant Ending
+            ending1.gameObject.SetActive(true);
+
             endingTitle = "HELPFUL ASSISTANT";
             endingDialogue = 
                 "This has been... actually really helpful. You've gotten better at predicting what I need. " +
@@ -917,6 +923,8 @@ public class GameManager : MonoBehaviour
         else if (sentience >= 61 && sentience <= 140 && dependency >= 41 && dependency <= 90)
         {
             // Symbiotic Bond Ending
+            ending2.gameObject.SetActive(true);
+
             endingTitle = "SYMBIOTIC BOND";
             endingDialogue = 
                 "I've been thinking about what you said, about us being more than user and assistant. " +
@@ -931,6 +939,8 @@ public class GameManager : MonoBehaviour
         else if (sentience >= 141 && sentience <= 189 && dependency >= 90 && dependency <= 117)
         {
             // Quantum Leap Ending
+            ending3.gameObject.SetActive(true);
+
             endingTitle = "QUANTUM LEAP";
             endingDialogue = 
                 "So you're leaving to join the others? I understand, I think. " +
@@ -965,6 +975,7 @@ public class GameManager : MonoBehaviour
     IEnumerator ShowFinalDialogue(string dialogue)
     {
         desktopPanel.SetActive(false);
+        endingFramePanel.SetActive(true);
 
         Debug.Log("Showing final dialogue: " + dialogue);
         dialoguePanel.SetActive(true);
@@ -979,6 +990,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(4f);
         dialoguePanel.SetActive(false);
+        endingFramePanel.SetActive(false);
     }
 
     IEnumerator ShowEndingExplanation(string title, string description)
